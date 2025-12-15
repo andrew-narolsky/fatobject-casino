@@ -16,8 +16,13 @@ It allows you to fetch casino brands, options for select fields, and details for
 ## Installation
 
 1. Copy the plugin folder to `wp-content/plugins/`.
-2. Activate the plugin via WordPress Admin → Plugins.
-3. Go to **Settings → FOC API** to configure the Base URL and API Token.
+2. Install Composer dependencies and generate the autoloader:
+```
+cd wp-content/plugins/fatobject-casino
+composer install
+```
+3. Activate the plugin via WordPress Admin → Plugins.
+4. Go to **Settings → FOC API** to configure the Base URL and API Token.
 
 ---
 
