@@ -2,28 +2,28 @@
 
 namespace FOC\Classes\Posts;
 
-use FOC\Models\FocBrandModel;
+use FOC\Models\FocSlotModel;
 
 /**
- * FocBrandPost
+ * FocSlotPost
  *
- * Custom post-type class for Brands.
+ * Custom post-type class for Slots.
  *
  * Extends the abstract {@see FocPostType} class and defines
  * the specific slug, plural name, and singular name for the
  * "Brand" post-type.
  *
  * This class can be registered via {@see FocPostType::register()}
- * to make the Brands post-type available in WordPress.
+ * to make the Slots post-type available in WordPress.
  */
-class FocBrandPost extends FocPostType
+class FocSlotPost extends FocPostType
 {
     /**
      * Post type slug.
      */
     protected static function slug(): string
     {
-        return 'brand';
+        return 'slot';
     }
 
     /**
@@ -31,7 +31,7 @@ class FocBrandPost extends FocPostType
      */
     protected static function getName(): string
     {
-        return 'Brands';
+        return 'Slots';
     }
 
     /**
@@ -39,7 +39,7 @@ class FocBrandPost extends FocPostType
      */
     protected static function getSingularName(): string
     {
-        return 'Brand';
+        return 'Slot';
     }
 
     /**
@@ -47,7 +47,7 @@ class FocBrandPost extends FocPostType
      */
     protected static function menuIcon(): ?string
     {
-        return 'dashicons-sos';
+        return 'dashicons-games';
     }
 
     /**
@@ -55,6 +55,6 @@ class FocBrandPost extends FocPostType
      */
     protected static function model(): string
     {
-        return FocBrandModel::class;
+        return FocSlotModel::class;
     }
 }

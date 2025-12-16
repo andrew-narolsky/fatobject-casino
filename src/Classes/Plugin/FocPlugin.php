@@ -7,6 +7,8 @@ use FOC\Background\FocBrandSyncProcess;
 use FOC\Background\FocResetAllDataProcess;
 use FOC\Classes\Import\FocImport;
 use FOC\Classes\Posts\FocBrandPost;
+use FOC\Classes\Posts\FocSlotPost;
+use FOC\Classes\Posts\FocSoftwareProviderPost;
 use FOC\Classes\Settings\FocSettings;
 
 /**
@@ -36,6 +38,8 @@ class FocPlugin
      */
     protected static array $posts = [
         FocBrandPost::class,
+        FocSlotPost::class,
+        FocSoftwareProviderPost::class,
     ];
 
     /**

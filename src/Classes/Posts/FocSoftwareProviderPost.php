@@ -2,28 +2,28 @@
 
 namespace FOC\Classes\Posts;
 
-use FOC\Models\FocBrandModel;
+use FOC\Models\FocSoftwareProviderModel;
 
 /**
- * FocBrandPost
+ * FocSoftwareProviderPost
  *
- * Custom post-type class for Brands.
+ * Custom post-type class for Software Providers.
  *
  * Extends the abstract {@see FocPostType} class and defines
  * the specific slug, plural name, and singular name for the
- * "Brand" post-type.
+ * "Software Provider" post-type.
  *
  * This class can be registered via {@see FocPostType::register()}
- * to make the Brands post-type available in WordPress.
+ * to make the Software Providers post-type available in WordPress.
  */
-class FocBrandPost extends FocPostType
+class FocSoftwareProviderPost extends FocPostType
 {
     /**
      * Post type slug.
      */
     protected static function slug(): string
     {
-        return 'brand';
+        return 'software-provider';
     }
 
     /**
@@ -31,7 +31,7 @@ class FocBrandPost extends FocPostType
      */
     protected static function getName(): string
     {
-        return 'Brands';
+        return 'Software Providers';
     }
 
     /**
@@ -39,7 +39,7 @@ class FocBrandPost extends FocPostType
      */
     protected static function getSingularName(): string
     {
-        return 'Brand';
+        return 'Software Provider';
     }
 
     /**
@@ -47,7 +47,7 @@ class FocBrandPost extends FocPostType
      */
     protected static function menuIcon(): ?string
     {
-        return 'dashicons-sos';
+        return 'dashicons-privacy';
     }
 
     /**
@@ -55,6 +55,6 @@ class FocBrandPost extends FocPostType
      */
     protected static function model(): string
     {
-        return FocBrandModel::class;
+        return FocSoftwareProviderModel::class;
     }
 }

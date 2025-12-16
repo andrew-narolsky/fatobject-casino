@@ -3,12 +3,12 @@
 namespace FOC\Models;
 
 /**
- * FocBrandModel
+ * FocSoftwareProviderModel
  *
- * Represents a Brand entity synchronized from the external API.
+ * Represents a SoftwareProvider entity synchronized from the external API.
  *
  * This model acts as a mapping layer between the API response
- * and the WordPress custom post type `brand`.
+ * and the WordPress custom post type `software-provider`.
  *
  * API fields may be returned in camelCase format, while WordPress
  * meta-keys follow snake_case naming. The model provides a key map
@@ -20,13 +20,13 @@ namespace FOC\Models;
  * Actual persistence (post-creation, meta updates) is handled
  * by higher-level services or import jobs.
  */
-class FocBrandModel extends FocBaseModel
+class FocSoftwareProviderModel extends FocBaseModel
 {
     /**
      * Maps API response keys (camelCase) to WordPress meta-keys (snake_case).
      *
-     * This mapping is applied when normalizing brand data received
-     * from the API before saving it to the `brand` custom post-type.
+     * This mapping is applied when normalizing software-provider data received
+     * from the API before saving it to the `software-provider` custom post-type.
      */
     public static function keyMap(): array
     {
@@ -37,19 +37,20 @@ class FocBrandModel extends FocBaseModel
 
     /**
      * Returns the list of allowed WordPress meta-fields
-     * for the `brand` custom post type.
+     * for the `software-provider` custom post type.
      *
      * Only these fields (after API key mapping) will be
-     * persisted during brand synchronization and import.
+     * persisted during software-provider synchronization and import.
      */
     public static function getFillable(): array
     {
         return [
-            'brand_id',
+            'software_provider_id',
             'url',
             'image',
             'year_established',
-            'platform',
+            'website',
+            'country',
         ];
     }
 }
