@@ -6,7 +6,7 @@ namespace FOC\Classes\Settings;
  * Plugin's settings class
  *
  * Handles plugin settings registration, sanitization, and retrieval.
- * Provides an admin settings page for configuring the Base URL and API token.
+ * Provides an admin settings page for configuring the Abstracts URL and API token.
  */
 class FocSettings
 {
@@ -107,13 +107,13 @@ class FocSettings
     public function sanitizeSettings($input): array
     {
         return [
-                'base_url'  => sanitize_text_field($input['base_url'] ?? ''),
+                'base_url' => sanitize_text_field($input['base_url'] ?? ''),
                 'api_token' => sanitize_text_field($input['api_token'] ?? ''),
         ];
     }
 
     /**
-     * Get Base URL from saved plugin settings.
+     * Get Abstracts URL from saved plugin settings.
      */
     public function getBaseUrl(): string
     {

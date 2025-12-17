@@ -1,6 +1,6 @@
 <?php
 
-namespace FOC\Background;
+namespace FOC\Background\Abstracts;
 
 use stdClass;
 use WP_Error;
@@ -10,7 +10,7 @@ use WP_Error;
  *
  * @package WP-Background-Processing
  */
-abstract class FocBackgroundProcess extends FocAsyncRequest
+abstract class FocAbstractBackgroundProcess extends FocAbstractAsyncRequest
 {
     /**
      * The default query arg name used for passing the chain ID to new processes.
@@ -56,6 +56,37 @@ abstract class FocBackgroundProcess extends FocAsyncRequest
      * The status set when a process is paused or pausing.
      */
     const int STATUS_PAUSED = 2;
+
+    /**
+     * Job class whose status will be updated during sync.
+     */
+    abstract protected function statusJob(): string;
+
+    /**
+     * Job class to be triggered when the sync is complete.
+     */
+    abstract protected function nextJob(): string;
+
+    /**
+     * Post type slug.
+     */
+    abstract protected function postType(): string;
+
+    /**
+     * Meta-key to match API items to posts.
+     */
+    abstract protected function metaKey(): string;
+
+    /**
+     * Define which API strategy should be used by this process.
+     *
+     * The returned class must implement {@see FocApiInterface} and represents
+     * the concrete API client that will be initialized by {@see FocApiAwareTrait}.
+     *
+     * This allows the same background process logic to be reused with
+     * different API endpoints by simply changing the strategy.
+     */
+    abstract protected function apiStrategy(): string;
 
     /**
      * Initiate a new background process.

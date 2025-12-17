@@ -2,6 +2,7 @@
 
 namespace FOC\Classes\Posts;
 
+use FOC\Classes\Posts\Abstracts\FocAbstractPostType;
 use FOC\Models\FocSlotModel;
 
 /**
@@ -9,14 +10,14 @@ use FOC\Models\FocSlotModel;
  *
  * Custom post-type class for Slots.
  *
- * Extends the abstract {@see FocPostType} class and defines
+ * Extends the abstract {@see FocAbstractPostType} class and defines
  * the specific slug, plural name, and singular name for the
  * "Brand" post-type.
  *
- * This class can be registered via {@see FocPostType::register()}
+ * This class can be registered via {@see FocAbstractPostType::register()}
  * to make the Slots post-type available in WordPress.
  */
-class FocSlotPost extends FocPostType
+class FocSlotPost extends FocAbstractPostType
 {
     /**
      * Post type slug.

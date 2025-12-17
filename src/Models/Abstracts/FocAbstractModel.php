@@ -1,11 +1,11 @@
 <?php
 
-namespace FOC\Models;
+namespace FOC\Models\Abstracts;
 
 /**
- * FocBaseModel
+ * FocAbstractModel
  *
- * Represents a entity synchronized from the external API.
+ * Represents an entity synchronized from the external API.
  *
  * This model acts as a mapping layer between the API response
  * and the WordPress custom post-type.
@@ -20,7 +20,7 @@ namespace FOC\Models;
  * Actual persistence (post-creation, meta updates) is handled
  * by higher-level services or import jobs.
  */
-abstract class FocBaseModel
+abstract class FocAbstractModel
 {
     /**
      * Maps API response keys (camelCase) to WordPress meta-keys (snake_case).
@@ -28,7 +28,8 @@ abstract class FocBaseModel
      * This mapping is applied when normalizing data received
      * from the API before saving it to the custom post-type.
      */
-    public static function keyMap(): array {
+    public static function keyMap(): array
+    {
         return [];
     }
 

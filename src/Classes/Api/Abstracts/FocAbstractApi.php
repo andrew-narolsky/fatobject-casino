@@ -1,9 +1,9 @@
 <?php
 
-namespace FOC\Classes\Api;
+namespace FOC\Classes\Api\Abstracts;
 
 /**
- * Base API class for all API service implementations.
+ * Abstracts API class for all API service implementations.
  *
  * This class contains reusable logic for:
  * - building API URLs
@@ -14,25 +14,10 @@ namespace FOC\Classes\Api;
  * Specific API modules (e.g., brands, casinos, games)
  * will extend this class and implement their own methods.
  */
-class FocApi
+abstract class FocAbstractApi
 {
     /**
-     * Main API endpoint used by the service (e.g. "/casino-brands").
-     *
-     * Child classes should override this constant with a valid endpoint path.
-     */
-    protected const string ENDPOINT = '';
-
-    /**
-     * Endpoint used for retrieving select-style options
-     * (usually "/entity/options").
-     *
-     * Child classes should override this constant if supported.
-     */
-    protected const string ENDPOINT_OPTIONS = '';
-
-    /**
-     * Base URL for the external API.
+     * Abstracts URL for the external API.
      */
     protected string $baseUrl;
 
@@ -51,6 +36,20 @@ class FocApi
     }
 
     /**
+     * Must return the endpoint for the API service.
+     */
+    abstract protected static function endpoint(): string;
+
+    /**
+     * Endpoint used for retrieving select-style options
+     * (usually "/entity/options").
+     */
+    protected static function getOptionsEndpoint(): string
+    {
+        return static::endpoint() . '/options';
+    }
+
+    /**
      * Placeholder method for making API requests.
      *
      * Child classes may override or use shared logic here.
@@ -62,9 +61,7 @@ class FocApi
         }
 
         $url = add_query_arg($params, $this->baseUrl . $endpoint);
-
         $headers = [];
-
         if ($this->apiToken) {
             $headers['X-Satellite-Key'] = $this->apiToken;
         }
@@ -88,39 +85,22 @@ class FocApi
      * Build and send an API request with supported query parameters.
      */
     protected function apiRequest(
-        string $endpoint,
-        array $filters = [],
+        string  $endpoint,
+        array   $filters = [],
         ?string $sortBy = null,
         ?string $sortOrder = null,
-        ?int $currentPage = null,
-        ?int $perPage = null,
-        ?int $limit = null
-    ): ?array {
+        ?int    $currentPage = null,
+        ?int    $perPage = null,
+        ?int    $limit = null
+    ): ?array
+    {
         $params = [];
-
-        if (!empty($filters)) {
-            $params['filters'] = $filters;
-        }
-
-        if ($sortBy) {
-            $params['sort_by'] = $sortBy;
-        }
-
-        if ($sortOrder) {
-            $params['sort_order'] = $sortOrder;
-        }
-
-        if ($currentPage !== null) {
-            $params['page'] = $currentPage;
-        }
-
-        if ($perPage !== null) {
-            $params['per_page'] = $perPage;
-        }
-
-        if ($limit !== null) {
-            $params['limit'] = $limit;
-        }
+        if (!empty($filters)) $params['filters'] = $filters;
+        if ($sortBy) $params['sort_by'] = $sortBy;
+        if ($sortOrder) $params['sort_order'] = $sortOrder;
+        if ($currentPage !== null) $params['page'] = $currentPage;
+        if ($perPage !== null) $params['per_page'] = $perPage;
+        if ($limit !== null) $params['limit'] = $limit;
 
         return $this->request($endpoint, $params);
     }
@@ -128,44 +108,34 @@ class FocApi
     /**
      * Get paginated data.
      */
-    protected function getPaginatedData(
-        int $currentPage = 1,
-        int $perPage = 10,
-        array $filters = [],
+    public function getPaginated(
+        int     $currentPage = 1,
+        int     $perPage = 10,
+        array   $filters = [],
         ?string $sortBy = null,
         ?string $sortOrder = null
-    ): ?array {
-        return $this->apiRequest(
-            static::ENDPOINT,
-            $filters,
-            $sortBy,
-            $sortOrder,
-            $currentPage,
-            $perPage
-        );
+    ): ?array
+    {
+        return $this->apiRequest(static::endpoint(), $filters, $sortBy, $sortOrder, $currentPage, $perPage);
     }
 
     /**
      * Get the option's list (id => name).
      */
-    protected function getOptionsData(
-        array $filters = [],
+    public function getOptions(
+        array   $filters = [],
         ?string $sortBy = null,
         ?string $sortOrder = null
-    ): ?array {
-        return $this->apiRequest(
-            static::ENDPOINT_OPTIONS,
-            $filters,
-            $sortBy,
-            $sortOrder
-        );
+    ): ?array
+    {
+        return $this->apiRequest(static::getOptionsEndpoint(), $filters, $sortBy, $sortOrder);
     }
 
     /**
      * Get a single item by ID.
      */
-    protected function getByIdData(int $id): ?array
+    public function getById(int $id): ?array
     {
-        return $this->apiRequest(static::ENDPOINT . '/' . $id);
+        return $this->apiRequest(static::endpoint() . '/' . $id);
     }
 }

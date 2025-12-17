@@ -6,15 +6,15 @@ use FOC\Classes\Api\Abstracts\FocAbstractApi;
 use FOC\Interfaces\FocApiInterface;
 
 /**
- * API service for fetching casino brands.
+ * API service for fetching casino slots.
  */
-class FocApiBrand extends FocAbstractApi implements FocApiInterface
+class FocApiSlot extends FocAbstractApi implements FocApiInterface
 {
     /**
-     * Main API endpoint for brand data.
+     * Main API endpoint for slot data.
      */
     protected static function endpoint(): string
     {
-        return '/casino-brands';
+        return '/slots';
     }
 }

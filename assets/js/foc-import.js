@@ -4,13 +4,20 @@ class FocImportController {
         this.resetBtn = document.getElementById('foc-reset-btn');
         this.result = document.getElementById('foc-import-result');
 
-        this.syncProgress = document.getElementById('foc-sync-progress');
-        this.syncBar = this.syncProgress?.querySelector('.foc-progress__bar');
-        this.syncLabel = this.syncProgress?.querySelector('.foc-progress__label');
-
-        this.importProgress = document.getElementById('foc-import-progress');
-        this.importBar = this.importProgress?.querySelector('.foc-progress__bar');
-        this.importLabel = this.importProgress?.querySelector('.foc-progress__label');
+        this.progressBars = [
+            {key: 'brandSync', containerId: 'foc-brand-sync-progress'},
+            {key: 'brandImport', containerId: 'foc-brand-import-progress'},
+            {key: 'slotSync', containerId: 'foc-slot-sync-progress'},
+            {key: 'slotImport', containerId: 'foc-slot-import-progress'},
+        ].map(item => {
+            const container = document.getElementById(item.containerId);
+            return {
+                key: item.key,
+                container,
+                bar: container?.querySelector('.foc-progress__bar'),
+                label: container?.querySelector('.foc-progress__label')
+            };
+        });
 
         this.statusInterval = null;
 
@@ -21,6 +28,16 @@ class FocImportController {
     bindEvents() {
         this.importBtn?.addEventListener('click', () => this.startImport());
         this.resetBtn?.addEventListener('click', () => this.resetData());
+    }
+
+    updateAllProgress(status) {
+        this.progressBars.forEach(pb => {
+            this.updateProgress(status[pb.key], pb.container, pb.bar, pb.label);
+        });
+    }
+
+    resetAllProgress() {
+        this.progressBars.forEach(pb => this.resetProgress(pb.container, pb.bar, pb.label));
     }
 
     post(data) {
@@ -46,36 +63,19 @@ class FocImportController {
             if (!res.success || !res.data) return;
 
             const status = res.data;
+            this.updateAllProgress(status);
 
-            this.updateProgress(
-                status.brandSync,
-                this.syncProgress,
-                this.syncBar,
-                this.syncLabel
+            const anyRunning = Object.values(status).some(
+                s => ['running', 'queued'].includes(s?.status)
             );
-
-            this.updateProgress(
-                status.brandImport,
-                this.importProgress,
-                this.importBar,
-                this.importLabel
-            );
-
-            const anyRunning =
-                status.brandSync?.status === 'running' ||
-                status.brandImport?.status === 'running';
 
             if (!anyRunning) {
                 this.stopPolling();
                 this.setButtonsState(false);
-
                 this.result.innerHTML =
                     '<div class="notice notice-success"><p>All tasks completed successfully!</p></div>';
 
-                await this.post({
-                    action: 'foc_clear_import_status',
-                    nonce: FOC_IMPORT.nonce,
-                });
+                await this.post({action: 'foc_clear_import_status', nonce: FOC_IMPORT.nonce});
             } else {
                 this.setButtonsState(true);
             }
@@ -116,8 +116,10 @@ class FocImportController {
         if (!res.success || !res.data) return;
 
         const anyRunning =
-            res.data.brandSync?.status === 'running' ||
-            res.data.brandImport?.status === 'running';
+            ['running', 'queued'].includes(res.data.brandSync?.status) ||
+            ['running', 'queued'].includes(res.data.brandImport?.status) ||
+            ['running', 'queued'].includes(res.data.slotSync?.status) ||
+            ['running', 'queued'].includes(res.data.slotImport?.status);
 
         if (anyRunning) {
             this.startPolling();
@@ -126,22 +128,15 @@ class FocImportController {
 
     async startImport() {
         this.setButtonsState(true);
+        this.resetAllProgress();
 
-        this.resetProgress(this.syncProgress, this.syncBar, this.syncLabel);
-        this.resetProgress(this.importProgress, this.importBar, this.importLabel);
-
-        const res = await this.post({
-            action: 'foc_run_import',
-            nonce: FOC_IMPORT.nonce,
-        });
+        const res = await this.post({action: 'foc_run_import', nonce: FOC_IMPORT.nonce});
 
         if (res.success) {
-            this.result.innerHTML =
-                `<div class="notice notice-info"><p>${res.data.message}</p></div>`;
+            this.result.innerHTML = `<div class="notice notice-info"><p>${res.data.message}</p></div>`;
             this.startPolling();
         } else {
-            this.result.innerHTML =
-                '<div class="notice notice-error"><p>Import failed.</p></div>';
+            this.result.innerHTML = '<div class="notice notice-error"><p>Import failed.</p></div>';
             this.setButtonsState(false);
         }
     }
@@ -170,7 +165,6 @@ class FocImportController {
     }
 }
 
-// Init
 document.addEventListener('DOMContentLoaded', () => {
     new FocImportController();
 });

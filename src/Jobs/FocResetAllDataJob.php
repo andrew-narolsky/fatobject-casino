@@ -3,6 +3,7 @@
 namespace FOC\Jobs;
 
 use FOC\Background\FocResetAllDataProcess;
+use FOC\Jobs\Abstracts\FocAbstractJob;
 
 /**
  * FocResetAllDataJob
@@ -23,7 +24,6 @@ class FocResetAllDataJob extends FocAbstractJob
     public static function handle(): void
     {
         $process = FocResetAllDataProcess::instance();
-        $process->push_to_queue([]);
-        $process->save()->dispatch();
+        $process->handle();
     }
 }

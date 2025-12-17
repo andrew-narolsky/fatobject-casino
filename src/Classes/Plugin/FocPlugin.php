@@ -5,41 +5,51 @@ namespace FOC\Classes\Plugin;
 use FOC\Background\FocBrandImportProcess;
 use FOC\Background\FocBrandSyncProcess;
 use FOC\Background\FocResetAllDataProcess;
+use FOC\Background\FocSlotImportProcess;
+use FOC\Background\FocSlotSyncProcess;
 use FOC\Classes\Import\FocImport;
 use FOC\Classes\Posts\FocBrandPost;
 use FOC\Classes\Posts\FocSlotPost;
-use FOC\Classes\Posts\FocSoftwareProviderPost;
 use FOC\Classes\Settings\FocSettings;
 
 /**
  * Main plugin controller class.
  *
- * This class handles the core lifecycle operations of the plugin, including:
- ** - registering WordPress hooks
- ** - handling activation and deactivation routines
- ** - creating and removing plugin-related database tables
- ** - adding the “Settings” link in the Plugins list
+ * This class handles the core lifecycle operations of the plugin:
+ * - Registering WordPress hooks
+ * - Handling activation and deactivation routines
+ * - Creating and removing plugin-related database tables
+ * - Adding the “Settings” link in the Plugins list
  *
  * All plugin-level initializations should be orchestrated through this class.
  */
 class FocPlugin
 {
     /**
-     * Array of process classes.
+     * Background process classes.
      */
     protected static array $processes = [
-        FocBrandImportProcess::class,
         FocBrandSyncProcess::class,
+        FocBrandImportProcess::class,
+        FocSlotSyncProcess::class,
+        FocSlotImportProcess::class,
         FocResetAllDataProcess::class,
     ];
 
     /**
-     * Array of custom posts classes.
+     * Custom post-type classes.
      */
     protected static array $posts = [
         FocBrandPost::class,
         FocSlotPost::class,
-        FocSoftwareProviderPost::class,
+    ];
+
+    /**
+     * Service / UI classes that self-register hooks.
+     */
+    protected static array $services = [
+        FocSettings::class,
+        FocImport::class,
     ];
 
     /**
@@ -55,8 +65,10 @@ class FocPlugin
             [self::class, 'addSettingsLink']
         );
 
-        new FocSettings();
-        new FocImport();
+        // Init services (admin UI, settings, ajax, etc.)
+        foreach (self::$services as $service) {
+            new $service();
+        }
 
         // Init process classes
         foreach (self::$processes as $process) {
@@ -66,7 +78,7 @@ class FocPlugin
         }
 
         // Load custom posts
-        add_action('init', function() {
+        add_action('init', function () {
             foreach (self::$posts as $postType) {
                 $postType::register();
 

@@ -2,6 +2,8 @@
 
 namespace FOC\Background;
 
+use FOC\Background\Abstracts\FocAbstractAsyncRequest;
+use FOC\Services\PostTypeSyncService;
 use FOC\Traits\FocSingletonTrait;
 
 /**
@@ -17,7 +19,7 @@ use FOC\Traits\FocSingletonTrait;
  * - Push tasks to the queue for asynchronous execution.
  * - Each task can perform part of the deletion or reset operations.
  */
-class FocResetAllDataProcess extends FocBackgroundProcess
+class FocResetAllDataProcess extends FocAbstractAsyncRequest
 {
     use FocSingletonTrait;
 
@@ -26,18 +28,9 @@ class FocResetAllDataProcess extends FocBackgroundProcess
      *
      * @return false Always return false to remove the task from the queue
      */
-    protected function task($item): false
+    public function handle(): false
     {
-        // Delete all brand posts
-        $brandPosts = get_posts([
-            'post_type'   => 'brand',
-            'numberposts' => -1,
-            'fields'      => 'ids',
-        ]);
-
-        foreach ($brandPosts as $postId) {
-            wp_delete_post($postId, true);
-        }
+        PostTypeSyncService::deleteByPostTypes(['brand', 'slot']);
 
         // Task processed, remove from queue
         return false;

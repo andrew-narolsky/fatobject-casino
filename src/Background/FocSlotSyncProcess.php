@@ -2,46 +2,36 @@
 
 namespace FOC\Background;
 
-use FOC\Background\Abstracts\FocAbstractImportProcess;
-use FOC\Classes\Api\FocApiBrand;
-use FOC\Jobs\FocBrandImportJob;
+use FOC\Background\Abstracts\FocAbstractSyncProcess;
+use FOC\Classes\Api\FocApiSlot;
+use FOC\Jobs\FocSlotImportJob;
 use FOC\Jobs\FocSlotSyncJob;
-use FOC\Models\FocBrandModel;
 use FOC\Traits\FocApiAwareTrait;
 use FOC\Traits\FocSingletonTrait;
 
 /**
- * FocBrandImportProcess
+ * FocSlotSyncProcess
  *
- * Background process responsible for importing brand data
- * from the external API in paginated batches.
+ * Background process responsible for fetching all slots from the API
+ * and syncing them with the local database.
  *
- * Each queued task represents a single page of API results
- * that is fetched, processed, and persisted to the database.
+ * Once the sync is complete, it automatically triggers the paginated
  */
-class FocBrandImportProcess extends FocAbstractImportProcess
+class FocSlotSyncProcess extends FocAbstractSyncProcess
 {
     use FocSingletonTrait;
 
     /**
      * Background process action name.
      */
-    protected string $action = 'brand_import';
-
-    /**
-     * Model class providing fillable attributes and key map.
-     */
-    protected function modelClass(): string
-    {
-        return FocBrandModel::class;
-    }
+    protected string $action = 'slot_sync';
 
     /**
      * Job class whose status will be updated during sync.
      */
     protected function statusJob(): string
     {
-        return FocBrandImportJob::class;
+        return FocSlotSyncJob::class;
     }
 
     /**
@@ -49,7 +39,7 @@ class FocBrandImportProcess extends FocAbstractImportProcess
      */
     protected function nextJob(): string
     {
-        return FocSlotSyncJob::class;
+        return FocSlotImportJob::class;
     }
 
     /**
@@ -57,15 +47,15 @@ class FocBrandImportProcess extends FocAbstractImportProcess
      */
     protected function postType(): string
     {
-        return 'brand';
+        return 'slot';
     }
 
     /**
-     * Meta-key in post-meta.
+     * Meta-key to match API items to posts.
      */
     protected function metaKey(): string
     {
-        return 'brand_id';
+        return 'slot_id';
     }
 
     /**
@@ -79,6 +69,6 @@ class FocBrandImportProcess extends FocAbstractImportProcess
      */
     protected function apiStrategy(): string
     {
-        return FocApiBrand::class;
+        return FocApiSlot::class;
     }
 }

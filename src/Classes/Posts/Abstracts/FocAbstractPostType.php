@@ -1,9 +1,9 @@
 <?php
 
-namespace FOC\Classes\Posts;
+namespace FOC\Classes\Posts\Abstracts;
 
 /**
- * FocPostType
+ * FocAbstractPostType
  *
  * Abstract base class for custom post types within the plugin.
  *
@@ -17,7 +17,7 @@ namespace FOC\Classes\Posts;
  * This approach ensures a consistent and maintainable way to handle
  * multiple custom post types in the plugin.
  */
-abstract class FocPostType
+abstract class FocAbstractPostType
 {
     /**
      * Post type slug.
@@ -56,16 +56,16 @@ abstract class FocPostType
     public static function register(): void
     {
         $labels = [
-            'name' => static::getName(),
-            'singular_name' => static::getSingularName(),
+                'name' => static::getName(),
+                'singular_name' => static::getSingularName(),
         ];
 
         $args = [
-            'labels' => $labels,
-            'public' => true,
-            'has_archive' => true,
-            'supports' => ['title', 'editor'],
-            'menu_icon' => static::menuIcon(),
+                'labels' => $labels,
+                'public' => true,
+                'has_archive' => true,
+                'supports' => ['title', 'editor'],
+                'menu_icon' => static::menuIcon(),
         ];
 
         register_post_type(static::slug(), $args);
@@ -88,16 +88,16 @@ abstract class FocPostType
     {
         add_action('add_meta_boxes', function () {
             add_meta_box(
-                static::slug() . '_meta',
-                static::getSingularName() . ' Details',
-                [static::class, 'renderMetaBox'],
-                static::slug()
+                    static::slug() . '_meta',
+                    static::getSingularName() . ' Details',
+                    [static::class, 'renderMetaBox'],
+                    static::slug()
             );
         });
 
         add_action(
-            'save_post_' . static::slug(),
-            [static::class, 'saveMetaBox']
+                'save_post_' . static::slug(),
+                [static::class, 'saveMetaBox']
         );
     }
 
@@ -106,11 +106,12 @@ abstract class FocPostType
      */
     public static function renderMetaBox($post): void
     {
+        /** @var class-string $model */
         $model = static::model();
 
         wp_nonce_field(
-            static::slug() . '_meta_nonce',
-            static::slug() . '_meta_nonce'
+                static::slug() . '_meta_nonce',
+                static::slug() . '_meta_nonce'
         );
 
         foreach ($model::getFillable() as $field) {
@@ -119,10 +120,10 @@ abstract class FocPostType
             <p>
                 <label><?= esc_html(ucfirst(str_replace('_', ' ', $field))); ?></label>
                 <input
-                    type="text"
-                    name="<?= esc_attr($field); ?>"
-                    value="<?= esc_attr($value); ?>"
-                    class="widefat"
+                        type="text"
+                        name="<?= esc_attr($field); ?>"
+                        value="<?= esc_attr($value); ?>"
+                        class="widefat"
                 >
             </p>
             <?php
@@ -134,11 +135,12 @@ abstract class FocPostType
      */
     public static function saveMetaBox(int $postId): void
     {
+        /** @var class-string $model */
         $nonce = static::slug() . '_meta_nonce';
 
         if (
-            !isset($_POST[$nonce]) ||
-            !wp_verify_nonce($_POST[$nonce], $nonce)
+                !isset($_POST[$nonce]) ||
+                !wp_verify_nonce($_POST[$nonce], $nonce)
         ) {
             return;
         }
@@ -152,9 +154,9 @@ abstract class FocPostType
         foreach ($model::getFillable() as $field) {
             if (isset($_POST[$field])) {
                 update_post_meta(
-                    $postId,
-                    $field,
-                    sanitize_text_field($_POST[$field])
+                        $postId,
+                        $field,
+                        sanitize_text_field($_POST[$field])
                 );
             }
         }

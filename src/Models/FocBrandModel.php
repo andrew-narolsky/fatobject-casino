@@ -2,6 +2,8 @@
 
 namespace FOC\Models;
 
+use FOC\Models\Abstracts\FocAbstractModel;
+
 /**
  * FocBrandModel
  *
@@ -20,7 +22,7 @@ namespace FOC\Models;
  * Actual persistence (post-creation, meta updates) is handled
  * by higher-level services or import jobs.
  */
-class FocBrandModel extends FocBaseModel
+class FocBrandModel extends FocAbstractModel
 {
     /**
      * Maps API response keys (camelCase) to WordPress meta-keys (snake_case).

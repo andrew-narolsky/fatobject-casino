@@ -1,16 +1,16 @@
 <?php
 
-namespace FOC\Background;
+namespace FOC\Background\Abstracts;
 
 use WP_Error;
 
 /**
- * Class FocAsyncRequest
+ * Class FocAbstractAsyncRequest
  *
- * Base class for asynchronous AJAX requests.
+ * Abstracts class for asynchronous AJAX requests.
  * Part of WP Background Processing.
  */
-abstract class FocAsyncRequest
+abstract class FocAbstractAsyncRequest
 {
     /**
      * Prefix
@@ -109,7 +109,7 @@ abstract class FocAsyncRequest
             'blocking' => false,
             'body' => $this->data,
             'cookies' => $_COOKIE,
-            'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
+            'sslverify' => apply_filters('https_local_ssl_verify', false),
         ];
 
         return apply_filters($this->identifier . '_post_args', $args);

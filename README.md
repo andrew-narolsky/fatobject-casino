@@ -17,10 +17,12 @@ It allows you to fetch casino brands, options for select fields, and details for
 
 1. Copy the plugin folder to `wp-content/plugins/`.
 2. Install Composer dependencies and generate the autoloader:
+
 ```
 cd wp-content/plugins/fatobject-casino
 composer install
 ```
+
 3. Activate the plugin via WordPress Admin → Plugins.
 4. Go to **Settings → FOC API** to configure the Base URL and API Token.
 
@@ -32,63 +34,6 @@ composer install
 - **API Token** – the authentication token for the API.
 
 ---
-
-## File Structure
-
-```
-fatobject-casino/
-        css/
-            foc-import.css
-    assets/
-        js/
-            foc-api.js
-    src/
-        Background/
-            FocAsyncRequest.php
-            FocBackgroundProcess.php
-            FocBrandImportProcess.php
-            FocBrandSyncProcess.php
-            FocResetAllDataProcess.php
-        Сlasses/
-            Api/
-                FocApi.php
-                FocApiBrand.php
-            Import/
-                FocImport.php
-            Plugin/
-                FocPlugin.php
-            Posts/
-                FocBrandPost.php
-                FocPostType.php
-            Settings/
-                FocSettings.php
-        Database/
-            Schemas/
-                FocBrandsSchema.php
-            FocMigrator.php       
-        Interfaces/
-            FocApiInterface.php
-            FocSchemaInterface.php
-        Jobs/
-            FocAbstractJob.php
-            FocBrandImportJob.php
-            FocBrandSyncJob.php
-            FocResetAllDataJob.php
-        Models/
-            FocBaseModel.php
-            FocBrandModel.php
-        Services/
-            FocApiService.php
-        Traits/
-            FocApiProxyTrait.php
-            FocBrandApiTrait.php
-            FocSingletonTrait.php
-            FocSyncsPostTypeFromApi.php
-    .gitignore
-    composer.json
-    fatobject-casino.php
-    README.md
-```
 
 ```
 FocApiInterface

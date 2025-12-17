@@ -1,11 +1,11 @@
 <?php
 
-namespace FOC\Jobs;
+namespace FOC\Jobs\Abstracts;
 
 /**
  * AbstractJob
  *
- * Base abstract class for background jobs.
+ * Abstracts abstract class for background jobs.
  *
  * Provides common methods for initializing background processes,
  * adding tasks to the queue, and dispatching them asynchronously.

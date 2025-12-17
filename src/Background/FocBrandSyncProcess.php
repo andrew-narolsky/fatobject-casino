@@ -2,11 +2,12 @@
 
 namespace FOC\Background;
 
+use FOC\Background\Abstracts\FocAbstractSyncProcess;
+use FOC\Classes\Api\FocApiBrand;
 use FOC\Jobs\FocBrandImportJob;
 use FOC\Jobs\FocBrandSyncJob;
-use FOC\Traits\FocBrandApiTrait;
+use FOC\Traits\FocApiAwareTrait;
 use FOC\Traits\FocSingletonTrait;
-use FOC\Traits\FocSyncsPostTypeFromApi;
 
 /**
  * FocBrandSyncProcess
@@ -16,9 +17,9 @@ use FOC\Traits\FocSyncsPostTypeFromApi;
  *
  * Once the sync is complete, it automatically triggers the paginated
  */
-class FocBrandSyncProcess extends FocBackgroundProcess
+class FocBrandSyncProcess extends FocAbstractSyncProcess
 {
-    use FocSingletonTrait, FocBrandApiTrait, FocSyncsPostTypeFromApi;
+    use FocSingletonTrait;
 
     /**
      * Background process action name.
@@ -26,51 +27,48 @@ class FocBrandSyncProcess extends FocBackgroundProcess
     protected string $action = 'brand_sync';
 
     /**
-     * Process a single task from the queue.
-     *
-     * Fetches a page of brand data from the API and updates
-     * the corresponding records in the database.
+     * Job class whose status will be updated during sync.
      */
-    protected function task($item): false
+    protected function statusJob(): string
     {
-        $apiService = $this->initBrandApi();
-        $brands = $apiService->getOptions();
-
-        update_option(FocBrandSyncJob::STATUS_OPTION, [
-            'status'    => 'running',
-            'total'     => count($brands),
-            'processed' => 0,
-            'percent'   => 0,
-        ]);
-
-        $this->syncPostTypeFromApi(
-            items: $brands,
-            postType: 'brand',
-            metaKey: 'brand_id',
-        );
-
-        // Task processed, remove from queue
-        return false;
+        return FocBrandSyncJob::class;
     }
 
     /**
-     * Finalize the background process.
-     *
-     * Called once all queued tasks have been processed.
-     * Automatically triggers {@see FocBrandImportJob} unless
-     * the process is canceled or paused.
+     * Job class to be triggered when the sync is complete.
      */
-    protected function complete(): void
+    protected function nextJob(): string
     {
-        parent::complete();
+        return FocBrandImportJob::class;
+    }
 
-        update_option(FocBrandSyncJob::STATUS_OPTION, [
-            'status'    => 'completed',
-            'percent'   => 100,
-        ]);
+    /**
+     * Post type slug.
+     */
+    protected function postType(): string
+    {
+        return 'brand';
+    }
 
-        if (!$this->is_cancelled() && !$this->is_paused()) {
-            FocBrandImportJob::handle();
-        }
+    /**
+     * Meta-key to match API items to posts.
+     */
+    protected function metaKey(): string
+    {
+        return 'brand_id';
+    }
+
+    /**
+     * Define which API strategy should be used by this process.
+     *
+     * The returned class must implement {@see FocApiInterface} and represents
+     * the concrete API client that will be initialized by {@see FocApiAwareTrait}.
+     *
+     * This allows the same background process logic to be reused with
+     * different API endpoints by simply changing the strategy.
+     */
+    protected function apiStrategy(): string
+    {
+        return FocApiBrand::class;
     }
 }

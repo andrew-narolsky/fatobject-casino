@@ -2,6 +2,8 @@
 
 namespace FOC\Models;
 
+use FOC\Models\Abstracts\FocAbstractModel;
+
 /**
  * FocSlotModel
  *
@@ -20,7 +22,7 @@ namespace FOC\Models;
  * Actual persistence (post-creation, meta updates) is handled
  * by higher-level services or import jobs.
  */
-class FocSlotModel extends FocBaseModel
+class FocSlotModel extends FocAbstractModel
 {
     /**
      * Maps API response keys (camelCase) to WordPress meta-keys (snake_case).
@@ -41,6 +43,11 @@ class FocSlotModel extends FocBaseModel
             'hasBonusBuy' => 'has_bonus_buy',
             'isMegaways' => 'is_mega_ways',
             'hasHoldAndWin' => 'has_hold_and_win',
+
+            'softwareProvider' => [
+                'meta' => 'software_provider',
+                'value' => 'name',
+            ],
         ];
     }
 
@@ -71,6 +78,7 @@ class FocSlotModel extends FocBaseModel
             'has_bonus_buy',
             'is_mega_ways',
             'has_hold_and_win',
+            'software_provider'
         ];
     }
 }

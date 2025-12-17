@@ -5,6 +5,8 @@ namespace FOC\Classes\Import;
 use FOC\Jobs\FocBrandImportJob;
 use FOC\Jobs\FocBrandSyncJob;
 use FOC\Jobs\FocResetAllDataJob;
+use FOC\Jobs\FocSlotImportJob;
+use FOC\Jobs\FocSlotSyncJob;
 
 /**
  * FocImport
@@ -50,11 +52,11 @@ class FocImport
     public function registerPage(): void
     {
         add_management_page(
-            'FOC Import',
-            'FOC Import',
-            'manage_options',
-            self::PAGE_SLUG,
-            [$this, 'renderPage']
+                'FOC Import',
+                'FOC Import',
+                'manage_options',
+                self::PAGE_SLUG,
+                [$this, 'renderPage']
         );
     }
 
@@ -71,24 +73,24 @@ class FocImport
         }
 
         wp_enqueue_script(
-            'foc-import-js',
-            plugin_dir_url(FOC_PLUGIN_FILE) . 'assets/js/foc-import.js',
-            ['jquery'],
-            '1.0',
-            true
+                'foc-import-js',
+                plugin_dir_url(FOC_PLUGIN_FILE) . 'assets/js/foc-import.js',
+                ['jquery'],
+                '1.0',
+                true
         );
 
         wp_enqueue_style(
-            'foc-import-css',
-            plugin_dir_url(FOC_PLUGIN_FILE) . 'assets/css/foc-import.css',
-            [],
-            '1.0'
+                'foc-import-css',
+                plugin_dir_url(FOC_PLUGIN_FILE) . 'assets/css/foc-import.css',
+                [],
+                '1.0'
         );
 
         wp_localize_script('foc-import-js', 'FOC_IMPORT', [
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce'    => wp_create_nonce('foc_import_ajax'),
-            'nonce_reset'  => wp_create_nonce('foc_reset_data_ajax'),
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('foc_import_ajax'),
+                'nonce_reset' => wp_create_nonce('foc_reset_data_ajax'),
         ]);
     }
 
@@ -105,7 +107,7 @@ class FocImport
         FocBrandSyncJob::handle();
 
         wp_send_json_success([
-            'message' => 'Import started successfully!',
+                'message' => 'Import started successfully!',
         ]);
     }
 
@@ -123,7 +125,7 @@ class FocImport
         FocResetAllDataJob::handle();
 
         wp_send_json_success([
-            'message' => 'Reset process has started!',
+                'message' => 'All data has been successfully deleted!',
         ]);
     }
 
@@ -137,13 +139,13 @@ class FocImport
     {
         check_ajax_referer('foc_import_ajax', 'nonce');
 
-        $brandSyncStatus   = get_option(FocBrandSyncJob::STATUS_OPTION)   ?: ['status' => 'idle', 'percent' => 0];
-        $brandImportStatus = get_option(FocBrandImportJob::STATUS_OPTION) ?: ['status' => 'idle', 'percent' => 0];
+        $response = [];
 
-        wp_send_json_success([
-            'brandSync'  => $brandSyncStatus,
-            'brandImport'=> $brandImportStatus,
-        ]);
+        foreach ($this->getTasks() as $task) {
+            $response[$task['responseKey']] = $this->getTaskStatus($task['job']);
+        }
+
+        wp_send_json_success($response);
     }
 
     /**
@@ -156,8 +158,9 @@ class FocImport
     {
         check_ajax_referer('foc_import_ajax', 'nonce');
 
-        delete_option(FocBrandSyncJob::STATUS_OPTION);
-        delete_option(FocBrandImportJob::STATUS_OPTION);
+        foreach ($this->getTasks() as $task) {
+            delete_option($task['job']::STATUS_OPTION);
+        }
 
         wp_send_json_success();
     }
@@ -167,46 +170,119 @@ class FocImport
      */
     public function renderPage(): void
     {
-        $brandSyncStatus = get_option(FocBrandSyncJob::STATUS_OPTION);
-        $brandImportStatus = get_option(FocBrandImportJob::STATUS_OPTION);
+        $tasks = $this->getTasks();
 
-        $isSyncRunning = $brandSyncStatus && $brandSyncStatus['status'] === 'running';
-        $syncPercent = $brandSyncStatus ? ($brandSyncStatus['percent'] ?? 0) : 0;
+        $statuses = [];
+        $isAnyRunning = false;
 
-        $isImportRunning = $brandImportStatus && $brandImportStatus['status'] === 'running';
-        $importPercent = $brandImportStatus ? ($brandImportStatus['percent'] ?? 0) : 0;
+        foreach ($tasks as $key => $task) {
+            $status = $this->getTaskStatus($task['job']);
 
-        $isAnyRunning = $isSyncRunning || $isImportRunning;
+            $statuses[$key] = [
+                    'label' => $task['label'],
+                    'status' => $status['status'],
+                    'percent' => $status['percent'],
+                    'running' => $status['status'] === 'running',
+            ];
+
+            if ($status['status'] === 'running') {
+                $isAnyRunning = true;
+            }
+        }
         ?>
         <div class="wrap">
             <h1>FOC Import</h1>
 
             <div id="foc-import-result" style="margin-top: 20px;"></div>
 
-            <!-- Brand Sync Progress -->
-            <div id="foc-sync-progress" class="foc-progress" style="<?= $isSyncRunning || $syncPercent === 100 ? '' : 'display:none;' ?>">
-                <div class="foc-progress__bar" style="width: <?= esc_attr($syncPercent) ?>%"></div>
-                <span class="foc-progress__label"><?= esc_html($syncPercent) ?>%</span>
-                <div class="foc-progress__text">Syncing brands</div>
-            </div>
+            <?php foreach ($statuses as $key => $task): ?>
+                <?php
+                $visible = $task['running'] || $task['percent'] === 100;
+                ?>
+                <div id="foc-<?php echo esc_attr($key); ?>-progress" class="foc-progress"
+                     style="<?php echo $visible ? '' : 'display:none;' ?>">
+                    <div class="foc-progress__bar" style="width: <?php echo esc_attr($task['percent']); ?>%"></div>
+                    <span class="foc-progress__label">
+                    <?php echo esc_html($task['percent']); ?>%
+                </span>
 
-            <!-- Brand Import Progress -->
-            <div id="foc-import-progress" class="foc-progress" style="<?= $isImportRunning ? '' : 'display:none;' ?>">
-                <div class="foc-progress__bar" style="width: <?= esc_attr($importPercent) ?>%"></div>
-                <span class="foc-progress__label"><?= esc_html($importPercent) ?>%</span>
-                <div class="foc-progress__text">Importing brands</div>
-            </div>
+                    <div class="foc-progress__text">
+                        <?php echo esc_html($task['label']); ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
 
             <p>Click the button below to start the import. The process will run asynchronously.</p>
 
-            <button class="button button-primary" id="foc-import-btn" <?= $isAnyRunning ? 'disabled' : '' ?>>
-                <?= $isAnyRunning ? 'Importing...' : 'Start Import' ?>
+            <button class="button button-primary" id="foc-import-btn" <?php echo $isAnyRunning ? 'disabled' : ''; ?>>
+                <?php echo $isAnyRunning ? 'Importing...' : 'Start Import'; ?>
             </button>
 
-            <button class="button btn-danger" id="foc-reset-btn" <?= $isAnyRunning ? 'disabled' : '' ?>>
+            <button class="button btn-danger" id="foc-reset-btn" <?php echo $isAnyRunning ? 'disabled' : ''; ?>>
                 Reset All Data
             </button>
         </div>
         <?php
+    }
+
+    /**
+     * Returns the list of import/sync tasks used by the admin UI.
+     *
+     * Each task defines:
+     ** - a unique key used for DOM IDs and JS bindings
+     ** - the Job class responsible for the task
+     ** - a human-readable label displayed in the progress UI
+     *
+     * Adding a new task (e.g., bonuses) only requires extending this configuration.
+     */
+    private function getTasks(): array
+    {
+        return [
+                'brand-sync' => [
+                        'job' => FocBrandSyncJob::class,
+                        'label' => 'Syncing brands',
+                        'responseKey' => 'brandSync',
+                ],
+                'brand-import' => [
+                        'job' => FocBrandImportJob::class,
+                        'label' => 'Importing brands',
+                        'responseKey' => 'brandImport',
+                ],
+                'slot-sync' => [
+                        'job' => FocSlotSyncJob::class,
+                        'label' => 'Syncing slots',
+                        'responseKey' => 'slotSync',
+                ],
+                'slot-import' => [
+                        'job' => FocSlotImportJob::class,
+                        'label' => 'Importing slots',
+                        'responseKey' => 'slotImport',
+                ],
+        ];
+    }
+
+    /**
+     * Retrieves the current status of a given Job.
+     *
+     * The status is stored in WordPress options by the background job itself.
+     * If no status is found, the task is considered idle with 0% progress.
+     */
+    private function getTaskStatus(string $jobClass): array
+    {
+        return get_option($jobClass::STATUS_OPTION) ?: $this->emptyStatus();
+    }
+
+    /**
+     * Get a default empty task status.
+     *
+     * Used when no status option exists in the database.
+     * Ensures a consistent status structure for all tasks.
+     */
+    private function emptyStatus(): array
+    {
+        return [
+                'status' => 'idle',
+                'percent' => 0,
+        ];
     }
 }
