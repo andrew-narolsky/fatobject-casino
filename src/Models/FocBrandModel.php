@@ -34,6 +34,61 @@ class FocBrandModel extends FocAbstractModel
     {
         return [
             'yearEstablished' => 'year_established',
+            'paymentSystems' => [
+                'meta'  => 'payment_systems',
+                'value' => null,
+            ],
+            'softwareProviders' => [
+                'meta'  => 'software_providers',
+                'value' => null,
+            ],
+        ];
+    }
+
+    /**
+     * Defines repeater meta-fields structure.
+     */
+    public static function getRepeaters(): array
+    {
+        return [
+            'bonuses' => [
+                'type',
+                'freeSpins',
+                'moneyAmount',
+                'moneyPercent',
+                'daysActive',
+                'wagerRequirements',
+                'minimumDeposit',
+                'maximumAmount',
+                'bonusCode',
+                'stickyBonus',
+                'forfeitable',
+                'maxBet',
+            ],
+            'licenses' => [
+                'name',
+                'website',
+                'image',
+            ],
+            'owner' => [
+                'name',
+                'description',
+                'image',
+            ],
+            'payment_systems' => [
+                'name',
+                'type',
+                'image',
+            ],
+            'platform' => [
+                'name',
+                'image',
+            ],
+            'software_providers' => [
+                'name',
+                'website',
+                'image',
+            ],
         ];
     }
 
@@ -51,7 +106,22 @@ class FocBrandModel extends FocAbstractModel
             'url',
             'image',
             'year_established',
+            'bonuses',
+            'licenses',
+            'owner',
+            'payment_systems',
             'platform',
+            'software_providers',
+        ];
+    }
+
+    /**
+     * Returns the list of fields that should be displayed as read-only / disabled in the meta-box.
+     */
+    public static function getDisabledFields(): array
+    {
+        return [
+            'brand_id',
         ];
     }
 }

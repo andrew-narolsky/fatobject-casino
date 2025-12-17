@@ -43,10 +43,23 @@ class FocSlotModel extends FocAbstractModel
             'hasBonusBuy' => 'has_bonus_buy',
             'isMegaways' => 'is_mega_ways',
             'hasHoldAndWin' => 'has_hold_and_win',
-
             'softwareProvider' => [
                 'meta' => 'software_provider',
-                'value' => 'name',
+                'value' => null,
+            ],
+        ];
+    }
+
+    /**
+     * Defines repeater meta-fields structure.
+     */
+    public static function getRepeaters(): array
+    {
+        return [
+            'software_provider' => [
+                'name',
+                'website',
+                'image',
             ],
         ];
     }

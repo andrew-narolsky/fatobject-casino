@@ -34,6 +34,22 @@ abstract class FocAbstractModel
     }
 
     /**
+     * Defines repeater meta-fields structure.
+     */
+    public static function getRepeaters(): array
+    {
+        return [];
+    }
+
+    /**
+     * Returns the list of fields that should be displayed as read-only / disabled in the meta-box.
+     */
+    public static function getDisabledFields(): array
+    {
+        return [];
+    }
+
+    /**
      * Returns the list of allowed WordPress meta-fields
      * for the custom post-type.
      *

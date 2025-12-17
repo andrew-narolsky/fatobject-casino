@@ -154,11 +154,7 @@ class PostTypeSyncService
 
             // complex mapping
             if (is_array($map) && ($map['meta'] ?? null) === $metaKey) {
-                $valueKey = $map['value'] ?? null;
-
-                return $valueKey && isset($item[$apiKey][$valueKey])
-                    ? $item[$apiKey][$valueKey]
-                    : null;
+                return $item[$apiKey] ?? null;
             }
         }
 

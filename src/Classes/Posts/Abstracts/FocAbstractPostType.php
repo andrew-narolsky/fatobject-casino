@@ -114,19 +114,67 @@ abstract class FocAbstractPostType
                 static::slug() . '_meta_nonce'
         );
 
+        $repeaters = $model::getRepeaters();
+        $repeaterKeys = array_keys($repeaters);
+        $disabledFields = $model::getDisabledFields();
+
+        // Render regular fields (exclude fields that are part of repeaters)
         foreach ($model::getFillable() as $field) {
+            if (in_array($field, $repeaterKeys, true)) {
+                continue; // skip, it's part of a repeater
+            }
+
             $value = get_post_meta($post->ID, $field, true);
+            $disabled = in_array($field, $disabledFields, true) ? 'disabled' : '';
             ?>
             <p>
-                <label><?= esc_html(ucfirst(str_replace('_', ' ', $field))); ?></label>
+                <label><?php echo esc_html(ucfirst(str_replace('_', ' ', $field))); ?></label>
                 <input
                         type="text"
-                        name="<?= esc_attr($field); ?>"
-                        value="<?= esc_attr($value); ?>"
+                        name="<?php echo esc_attr($field); ?>"
+                        value="<?php echo esc_attr($value); ?>"
                         class="widefat"
+                        <?php echo $disabled; ?>
                 >
             </p>
             <?php
+        }
+
+        // Render repeaters
+        foreach ($repeaters as $metaKey => $fields) {
+            $values = get_post_meta($post->ID, $metaKey, true) ?: [];
+
+            if (!empty($values) && !isset($values[0])) {
+                $values = [$values];
+            }
+
+            echo '<hr>';
+            echo '<strong>' . esc_html(ucfirst(str_replace('_', ' ', $metaKey))) . '</strong>';
+
+            foreach ($values as $index => $row) {
+                echo '<div style="border:1px solid #ddd;padding:10px;margin:10px 0;">';
+
+                foreach ($fields as $field) {
+                    $value = $row[$field] ?? '';
+                    $disabled = in_array($metaKey, $disabledFields, true) ? 'disabled' : '';
+                    ?>
+                    <p>
+                        <label><?php echo esc_html(ucfirst($field)); ?></label>
+                        <input
+                                type="text"
+                                name="<?php echo esc_attr($metaKey); ?>[<?php echo $index; ?>][<?php echo esc_attr($field); ?>]"
+                                value="<?php echo esc_attr($value); ?>"
+                                class="widefat"
+                                <?php echo $disabled; ?>
+                        >
+                    </p>
+                    <?php
+                }
+
+                echo '</div>';
+            }
+
+            echo '<div><em>Existing items — edit and save if needed</em></div>';
         }
     }
 
@@ -138,10 +186,7 @@ abstract class FocAbstractPostType
         /** @var class-string $model */
         $nonce = static::slug() . '_meta_nonce';
 
-        if (
-                !isset($_POST[$nonce]) ||
-                !wp_verify_nonce($_POST[$nonce], $nonce)
-        ) {
+        if (!isset($_POST[$nonce]) || !wp_verify_nonce($_POST[$nonce], $nonce)) {
             return;
         }
 
@@ -151,6 +196,7 @@ abstract class FocAbstractPostType
 
         $model = static::model();
 
+        // Save simple fillable fields
         foreach ($model::getFillable() as $field) {
             if (isset($_POST[$field])) {
                 update_post_meta(
@@ -159,6 +205,26 @@ abstract class FocAbstractPostType
                         sanitize_text_field($_POST[$field])
                 );
             }
+        }
+
+        // Save repeater fields
+        $repeaters = $model::getRepeaters();
+
+        foreach ($repeaters as $metaKey => $fields) {
+            if (!isset($_POST[$metaKey]) || !is_array($_POST[$metaKey])) {
+                continue;
+            }
+
+            $sanitizedRows = [];
+            foreach ($_POST[$metaKey] as $row) {
+                $sanitizedRow = [];
+                foreach ($fields as $field) {
+                    $sanitizedRow[$field] = isset($row[$field]) ? sanitize_text_field($row[$field]) : '';
+                }
+                $sanitizedRows[] = $sanitizedRow;
+            }
+
+            update_post_meta($postId, $metaKey, $sanitizedRows);
         }
     }
 }
