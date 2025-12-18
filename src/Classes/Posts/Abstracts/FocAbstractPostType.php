@@ -119,7 +119,7 @@ abstract class FocAbstractPostType
         $disabledFields = $model::getDisabledFields();
 
         // Render regular fields (exclude fields that are part of repeaters)
-        foreach ($model::getFillable() as $field) {
+        foreach ($model::getAllEditableFields() as $field) {
             if (in_array($field, $repeaterKeys, true)) {
                 continue; // skip, it's part of a repeater
             }
@@ -197,7 +197,7 @@ abstract class FocAbstractPostType
         $model = static::model();
 
         // Save simple fillable fields
-        foreach ($model::getFillable() as $field) {
+        foreach ($model::getAllEditableFields() as $field) {
             if (isset($_POST[$field])) {
                 update_post_meta(
                         $postId,

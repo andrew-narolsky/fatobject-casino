@@ -35,11 +35,11 @@ class FocBrandModel extends FocAbstractModel
         return [
             'yearEstablished' => 'year_established',
             'paymentSystems' => [
-                'meta'  => 'payment_systems',
+                'meta' => 'payment_systems',
                 'value' => null,
             ],
             'softwareProviders' => [
-                'meta'  => 'software_providers',
+                'meta' => 'software_providers',
                 'value' => null,
             ],
         ];
@@ -122,6 +122,17 @@ class FocBrandModel extends FocAbstractModel
     {
         return [
             'brand_id',
+        ];
+    }
+
+    /**
+     * Extra fields not coming from API, used internally in admin
+     */
+    public static function getExtraFields(): array
+    {
+        return [
+            'background',
+            'rating',
         ];
     }
 }

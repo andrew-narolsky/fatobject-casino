@@ -35,6 +35,85 @@ composer install
 
 ---
 
+## Template Overrides
+
+FatObject Casino provides default templates for its custom post types.
+
+- Example: Overriding single-brand.php
+
+1. In your theme folder, create a fatobject-casino directory:
+
+```
+theme/
+└─ fatobject-casino/
+```
+
+2. Add your custom template for the Brand post type:
+
+```
+theme/
+└─ fatobject-casino/
+    ├─ single-brand.php
+    └─ single-slot.php
+```
+
+3. WordPress will use your theme’s template if it exists. Otherwise, it will fallback to the plugin’s default template:
+
+```
+plugins/fatobject-casino/templates/single-brand.php
+plugins/fatobject-casino/templates/single-slot.php
+```
+
+## Setting up Nginx Proxy for Image Uploads
+
+Follow these steps to add proxy rules for image directories in your main Nginx configuration and reload Nginx:
+
+1. Add proxy rules to Nginx
+
+```
+# Proxy for casino brand images
+location /uploads/casino_brand/ {
+    proxy_pass https://EXAMPLE.com/uploads/casino_brand/;
+    proxy_set_header Host fatobject.studio;
+}
+
+# Proxy for payment system images
+location /uploads/payment_system/ {
+    proxy_pass https://EXAMPLE.com/uploads/payment_system/;
+    proxy_set_header Host fatobject.studio;
+}
+
+# Proxy for software provider images
+location /uploads/software-provider/ {
+    proxy_pass https://EXAMPLE.com/uploads/software-provider/;
+    proxy_set_header Host fatobject.studio;
+}
+
+# Proxy for license images
+location /uploads/license/ {
+    proxy_pass https://EXAMPLE.com/uploads/license/;
+    proxy_set_header Host fatobject.studio;
+}
+
+# Proxy for slot images
+location /uploads/slot/ {
+    proxy_pass https://EXAMPLE.com/uploads/slot/;
+    proxy_set_header Host fatobject.studio;
+}
+
+# Proxy for game images
+location /uploads/game/ {
+    proxy_pass https://EXAMPLE.com/uploads/game/;
+    proxy_set_header Host fatobject.studio;
+}
+```
+
+2. Reload Nginx
+
+## API Strategy Pattern Diagram
+
+The FOC API integration uses a Strategy Pattern to handle multiple API modules in a consistent and flexible way.
+
 ```
 FocApiInterface
 │
@@ -46,7 +125,6 @@ FocApi (base class)
 │
 ├─ Concrete modules extend FocApi and implement FocApiInterface
 │   ├─ FocApiBrand
-│   ├─ FocApiBonus
 │   ├─ FocApiSlot
 │   └─ ... other API modules
 │

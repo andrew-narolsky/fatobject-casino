@@ -104,4 +104,14 @@ class FocSlotModel extends FocAbstractModel
             'slot_id',
         ];
     }
+
+    /**
+     * Extra fields not coming from API, used internally in admin
+     */
+    public static function getExtraFields(): array
+    {
+        return [
+            'rating',
+        ];
+    }
 }

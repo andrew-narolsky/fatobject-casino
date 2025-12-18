@@ -7,10 +7,12 @@ use FOC\Background\FocBrandSyncProcess;
 use FOC\Background\FocResetAllDataProcess;
 use FOC\Background\FocSlotImportProcess;
 use FOC\Background\FocSlotSyncProcess;
+use FOC\Classes\Hooks\FocFrontendHooks;
 use FOC\Classes\Import\FocImport;
 use FOC\Classes\Posts\FocBrandPost;
 use FOC\Classes\Posts\FocSlotPost;
 use FOC\Classes\Settings\FocSettings;
+use FOC\Classes\Template\FocTemplateLoader;
 
 /**
  * Main plugin controller class.
@@ -64,6 +66,7 @@ class FocPlugin
     protected static array $services = [
         FocSettings::class,
         FocImport::class,
+        FocFrontendHooks::class,
     ];
 
     /**
@@ -101,6 +104,24 @@ class FocPlugin
                 }
             }
         });
+
+        // Load default templates
+        add_filter('template_include', function ($template) {
+            $templates = [
+                'brand' => 'single-brand.php',
+                'slot' => 'single-slot.php',
+            ];
+
+            if (is_singular(array_keys($templates))) {
+                $postType = get_post_type();
+                return FocTemplateLoader::locate($templates[$postType]);
+            }
+
+            return $template;
+        });
+
+        // Load assets
+        add_action('wp_enqueue_scripts', [self::class, 'enqueueAssets']);
     }
 
     /**
@@ -176,6 +197,50 @@ class FocPlugin
         }
 
         return $run;
+    }
+
+    /**
+     * Enqueue frontend styles and scripts for plugin templates.
+     *
+     * Loads CSS and JavaScript assets required by the plugin on the frontend.
+     * Assets are conditionally enqueued only on supported custom post types
+     * (e.g. "brand" and "slot") to avoid unnecessary loading on other pages.
+     *
+     * This method is intended to be hooked into `wp_enqueue_scripts`.
+     */
+    public static function enqueueAssets(): void
+    {
+        if (!is_singular(['brand', 'slot'])) {
+            return;
+        }
+
+        $version = defined('FOC_PLUGIN_VERSION')
+            ? FOC_PLUGIN_VERSION
+            : filemtime(FOC_PLUGIN_PATH . 'assets/css/foc-frontend.css');
+
+        wp_enqueue_style(
+            'foc-frontend',
+            FOC_PLUGIN_URL . 'assets/css/foc-frontend.css',
+            [],
+            $version
+        );
+
+        wp_enqueue_script(
+            'foc-frontend',
+            FOC_PLUGIN_URL . 'assets/js/foc-frontend.js',
+            [],
+            $version,
+            true
+        );
+
+        wp_localize_script(
+            'foc-frontend',
+            'FOC_FRONTEND',
+            [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('foc_frontend'),
+            ]
+        );
     }
 }
 

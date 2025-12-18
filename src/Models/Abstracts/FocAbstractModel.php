@@ -50,10 +50,29 @@ abstract class FocAbstractModel
     }
 
     /**
+     * Extra fields not coming from API, used internally in admin
+     */
+    public static function getExtraFields(): array
+    {
+        return [];
+    }
+
+    /**
      * Returns the list of allowed WordPress meta-fields
      * for the custom post-type.
      *
      * Must be defined in the child model.
      */
     abstract public static function getFillable(): array;
+
+    /**
+     * Return all fields that can be edited (fillable and extra)
+     */
+    public static function getAllEditableFields(): array
+    {
+        return array_merge(
+            static::getExtraFields(),
+            static::getFillable()
+        );
+    }
 }
