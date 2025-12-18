@@ -26,6 +26,20 @@ use FOC\Classes\Settings\FocSettings;
 class FocPlugin
 {
     /**
+     * Hour of day (24h format) when the daily import cron should run.
+     *
+     * Uses WordPress timezone (see Settings → General).
+     */
+    private const int CRON_HOUR = 0;
+
+    /**
+     * Minute of the hour when the daily import cron should run.
+     *
+     * Combined with CRON_HOUR to calculate the next execution time.
+     */
+    private const int CRON_MINUTE = 0;
+
+    /**
      * Background process classes.
      */
     protected static array $processes = [
@@ -96,6 +110,17 @@ class FocPlugin
      */
     public static function activate(): void
     {
+        if (wp_next_scheduled(FocImport::CRON_HOOK)) {
+            return;
+        }
+
+        $timestamp = self::getNextRunTimestamp();
+
+        wp_schedule_event(
+            $timestamp,
+            'daily',
+            FocImport::CRON_HOOK
+        );
     }
 
     /**
@@ -106,12 +131,12 @@ class FocPlugin
      */
     public static function deactivate(): void
     {
+        // Clear daily import cron
+        wp_clear_scheduled_hook(FocImport::CRON_HOOK);
     }
 
     /**
-     * Register hooks used by the plugin.
-     *
-     * Should be called on plugins_loaded.
+     * Add a Settings link to the plugins list.
      */
     public static function addSettingsLink(array $links): array
     {
@@ -123,6 +148,34 @@ class FocPlugin
         array_unshift($links, $settings_link);
 
         return $links;
+    }
+
+    /**
+     * Calculate the timestamp for the next scheduled cron run.
+     *
+     * Determines the ближайчий запуск щоденного імпорту на основі
+     * CRON_HOUR та CRON_MINUTE, використовуючи timezone WordPress.
+     *
+     * - If the scheduled time today has not yet passed, it will run today
+     * - Otherwise, it will be scheduled for tomorrow
+     */
+    private static function getNextRunTimestamp(): int
+    {
+        $now = current_time('timestamp');
+
+        $run = strtotime(
+            sprintf('today %02d:%02d', self::CRON_HOUR, self::CRON_MINUTE),
+            $now
+        );
+
+        if ($run <= $now) {
+            $run = strtotime(
+                sprintf('tomorrow %02d:%02d', self::CRON_HOUR, self::CRON_MINUTE),
+                $now
+            );
+        }
+
+        return $run;
     }
 }
 

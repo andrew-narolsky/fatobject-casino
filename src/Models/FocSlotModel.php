@@ -94,4 +94,14 @@ class FocSlotModel extends FocAbstractModel
             'software_provider'
         ];
     }
+
+    /**
+     * Returns the list of fields that should be displayed as read-only / disabled in the meta-box.
+     */
+    public static function getDisabledFields(): array
+    {
+        return [
+            'slot_id',
+        ];
+    }
 }

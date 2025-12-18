@@ -26,6 +26,11 @@ class FocImport
     public const string PAGE_SLUG = 'foc-import';
 
     /**
+     * Cron hook name.
+     */
+    public const string CRON_HOOK = 'foc_daily_import';
+
+    /**
      * Constructor.
      *
      * Registers admin hooks and AJAX handlers.
@@ -42,6 +47,9 @@ class FocImport
         add_action('wp_ajax_foc_reset_data', [$this, 'ajaxResetData']);
         add_action('wp_ajax_foc_import_status', [$this, 'ajaxImportStatus']);
         add_action('wp_ajax_foc_clear_import_status', [$this, 'ajaxClearImportStatus']);
+
+        // CRON
+        add_action(self::CRON_HOOK, [$this, 'handleDailyImport']);
     }
 
     /**
@@ -284,5 +292,19 @@ class FocImport
                 'status' => 'idle',
                 'percent' => 0,
         ];
+    }
+
+    /**
+     * Daily cron import handler.
+     */
+    public function handleDailyImport(): void
+    {
+        $status = get_option(FocBrandSyncJob::STATUS_OPTION);
+
+        if (!empty($status['status']) && $status['status'] === 'running') {
+            return;
+        }
+
+        FocBrandSyncJob::handle();
     }
 }
