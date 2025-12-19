@@ -150,3 +150,12 @@ $bonuses = $service->getPaginated();
 $service->setStrategy(new FocApiSlot($baseUrl, $token));
 $slots = $service->getPaginated();
 ```
+
+## Shortcodes
+
+The plugin provides several shortcodes for displaying casino-related content. All shortcodes can be used in posts, pages, Gutenberg blocks, or widgets.
+
+1. Brand bonuses (displays all available bonuses for the current brand).
+```
+[foc_brand_bonuses]
+```

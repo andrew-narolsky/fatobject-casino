@@ -12,6 +12,7 @@ use FOC\Classes\Import\FocImport;
 use FOC\Classes\Posts\FocBrandPost;
 use FOC\Classes\Posts\FocSlotPost;
 use FOC\Classes\Settings\FocSettings;
+use FOC\Classes\Shortcodes\FocBrandBonusesShortcode;
 use FOC\Classes\Template\FocTemplateLoader;
 
 /**
@@ -61,6 +62,13 @@ class FocPlugin
     ];
 
     /**
+     * Shortcodes classes.
+     */
+    protected static array $shortcodes = [
+        FocBrandBonusesShortcode::class,
+    ];
+
+    /**
      * Service / UI classes that self-register hooks.
      */
     protected static array $services = [
@@ -95,6 +103,13 @@ class FocPlugin
         }
 
         // Load custom posts
+        add_action('init', function () {
+            foreach (self::$shortcodes as $shortcode) {
+                $shortcode::register();
+            }
+        });
+
+        // Load shortcodes
         add_action('init', function () {
             foreach (self::$posts as $postType) {
                 $postType::register();

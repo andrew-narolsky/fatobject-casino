@@ -1,25 +1,30 @@
 <?php
 $meta = get_post_meta(get_the_ID());
 
-$image = $meta['image'][0] ?: esc_url(FOC_PLUGIN_URL . 'assets/img/brand-logo.svg');
-$url = foc_normalize_url($meta['url'][0] ?? null);
-$rating = $meta['rating'][0] ?: '5.00';
-$msxRatting = 5;
+$image = foc_get_meta_value($meta, 'image', esc_url(FOC_PLUGIN_URL . 'assets/img/brand-logo.svg'));
+$url = foc_normalize_url(foc_get_meta_value($meta, 'url', null));
+$rating = foc_get_meta_value($meta, 'rating', null);
+$maxRating = 5;
 
-$volatility = $meta['volatility'][0] ?: '—';
-$max_profit = $meta['max_profit'][0] ?: '—';
-$payout_percentage = $meta['payout_percentage'][0] ?: '—';
+$volatility = foc_get_meta_value($meta, 'volatility');
+$max_profit = foc_get_meta_value($meta, 'max_profit');
+$payout_percentage = foc_get_meta_value($meta, 'payout_percentage', '—');
+if ($payout_percentage !== '—') {
+    $payout_percentage .= '%';
+}
 
-$rows = $meta['rows'][0] ?: '—';
-$min_bet = $meta['min_bet'][0] ?: '—';
-$paylines = $meta['paylines'][0] ?: '—';
-$reels = $meta['reels'][0] ?: '—';
+$rows = foc_get_meta_value($meta, 'rows');
+$min_bet = foc_get_meta_value($meta, 'min_bet');
+$paylines = foc_get_meta_value($meta, 'paylines');
+$reels = foc_get_meta_value($meta, 'reels');
 ?>
 
 <div class="slot-card">
-    <div class="rate-block rate-<?php echo floor((float)$rating); ?>">
-        <span class="rate"><?php echo $rating; ?>/<?php echo $msxRatting; ?></span>
-    </div>
+    <?php if ($rating): ?>
+        <div class="rate-block rate-<?php echo floor((float)$rating); ?>">
+            <span class="rate"><?php echo $rating; ?>/<?php echo $maxRating; ?></span>
+        </div>
+    <?php endif; ?>
 
     <div class="game-provider">Game provider: <b>Play'n Go</b></div>
 
@@ -39,7 +44,7 @@ $reels = $meta['reels'][0] ?: '—';
             </div>
             <div class="bw-item">
                 <span class="item-title"><?php echo __('RTP', 'foc-casino'); ?></span>
-                <span class="item-value"><?php echo $payout_percentage . '%'; ?></span>
+                <span class="item-value"><?php echo $payout_percentage; ?></span>
             </div>
         </div>
     </div>
