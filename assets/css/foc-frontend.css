@@ -1219,7 +1219,8 @@ button {
     margin: 0
 }
 
-.foc-casino__best-payments .best-payments-wrapper {
+.foc-casino__best-payments .best-payments-wrapper,
+.foc-casino__best-providers .best-providers-wrapper {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -1229,11 +1230,13 @@ button {
     transition: max-height .5s ease
 }
 
-.foc-casino__best-payments .best-payments-wrapper.show {
+.foc-casino__best-payments .best-payments-wrapper.show,
+.foc-casino__best-providers .best-providers-wrapper.show {
     max-height: 1000px
 }
 
-.foc-casino__best-payments .item {
+.foc-casino__best-payments .item,
+.foc-casino__best-providers .item {
     width: calc((100% - 72px) / 10);
     height: 45px;
     border: 1px solid var(--grey-border);
@@ -1244,20 +1247,24 @@ button {
     background: var(--white)
 }
 
-.foc-casino__best-payments .item img {
+.foc-casino__best-payments .item img,
+.foc-casino__best-providers .item img {
     max-width: 80%;
 }
 
 @media (max-width: 768px) {
-    .foc-casino__best-payments .item {
+    .foc-casino__best-payments .item,
+    .foc-casino__best-providers .item {
         width: 64px
     }
 }
 
-.foc-casino__best-payments .show-more-block {
+.foc-casino__best-payments .show-more-block,
+.foc-casino__best-providers .show-more-block {
     border-top: none
 }
 
-.foc-casino__best-payments .show-more-block .show-more {
+.foc-casino__best-payments .show-more-block .show-more,
+.foc-casino__best-providers .show-more-block .show-more {
     margin: 0
 }
