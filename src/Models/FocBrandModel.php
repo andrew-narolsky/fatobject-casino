@@ -89,6 +89,10 @@ class FocBrandModel extends FocAbstractModel
                 'website',
                 'image',
             ],
+            'games' => [
+                'name',
+                'image',
+            ],
         ];
     }
 
@@ -112,6 +116,7 @@ class FocBrandModel extends FocAbstractModel
             'payment_systems',
             'platform',
             'software_providers',
+            'games',
         ];
     }
 

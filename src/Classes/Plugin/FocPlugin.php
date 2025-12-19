@@ -13,6 +13,7 @@ use FOC\Classes\Posts\FocBrandPost;
 use FOC\Classes\Posts\FocSlotPost;
 use FOC\Classes\Settings\FocSettings;
 use FOC\Classes\Shortcodes\FocBrandBonusesShortcode;
+use FOC\Classes\Shortcodes\FocBrandGamesShortcode;
 use FOC\Classes\Shortcodes\FocBrandPaymentSystemsShortcode;
 use FOC\Classes\Shortcodes\FocBrandSoftwareProvidersShortcode;
 use FOC\Classes\Template\FocTemplateLoader;
@@ -70,6 +71,7 @@ class FocPlugin
         FocBrandBonusesShortcode::class,
         FocBrandPaymentSystemsShortcode::class,
         FocBrandSoftwareProvidersShortcode::class,
+        FocBrandGamesShortcode::class,
     ];
 
     /**
