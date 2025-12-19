@@ -114,3 +114,15 @@ if (!function_exists('foc_get_bonus_type_class')) {
         return $map[$type] ?? '';
     }
 }
+
+if (!function_exists('foc_dump')) {
+    /**
+     * Dump an array in a readable format.
+     */
+    function foc_dump(array $value): void
+    {
+        echo '<pre>';
+        print_r($value);
+        echo '</pre>';
+    }
+}

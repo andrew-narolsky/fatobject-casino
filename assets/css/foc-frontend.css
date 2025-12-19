@@ -562,7 +562,13 @@ button {
 
 .foc-casino {
     padding-top: 16px;
-    padding-bottom: 30px
+    padding-bottom: 30px;
+    font-family: Archivo, system-ui;
+    font-size: 14px;
+    line-height: 1.3em;
+    font-weight: 300;
+    color: var(--violet);
+    background: var(--off-white)
 }
 
 @media (max-width: 1199px) {
@@ -1236,6 +1242,10 @@ button {
     align-items: center;
     justify-content: center;
     background: var(--white)
+}
+
+.foc-casino__best-payments .item img {
+    max-width: 80%;
 }
 
 @media (max-width: 768px) {

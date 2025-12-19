@@ -159,3 +159,7 @@ The plugin provides several shortcodes for displaying casino-related content. Al
 ```
 [foc_brand_bonuses]
 ```
+2. Brand payment systems (displays all available bonuses for the current brand).
+```
+[foc_brand_payment_systems]
+```

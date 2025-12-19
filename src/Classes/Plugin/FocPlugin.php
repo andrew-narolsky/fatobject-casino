@@ -13,6 +13,7 @@ use FOC\Classes\Posts\FocBrandPost;
 use FOC\Classes\Posts\FocSlotPost;
 use FOC\Classes\Settings\FocSettings;
 use FOC\Classes\Shortcodes\FocBrandBonusesShortcode;
+use FOC\Classes\Shortcodes\FocBrandPaymentSystemsShortcode;
 use FOC\Classes\Template\FocTemplateLoader;
 
 /**
@@ -66,6 +67,7 @@ class FocPlugin
      */
     protected static array $shortcodes = [
         FocBrandBonusesShortcode::class,
+        FocBrandPaymentSystemsShortcode::class,
     ];
 
     /**
