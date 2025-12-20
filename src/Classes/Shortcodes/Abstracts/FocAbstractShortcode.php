@@ -36,6 +36,13 @@ abstract class FocAbstractShortcode
     protected const int PER_PAGE = 10;
 
     /**
+     * Post-type slug.
+     *
+     * Can be overridden or ignored by child shortcodes if needed.
+     */
+    protected const string POST_TYPE = '';
+
+    /**
      * Shortcode tag
      */
     abstract protected static function tag(): string;
@@ -68,11 +75,11 @@ abstract class FocAbstractShortcode
     {
         $attributes = shortcode_atts(
             [
-                'pages' => static::PER_PAGE,
-                'ids'       => '',
-                'orderby'   => '',
-                'order'     => 'DESC',
-                'meta_key'  => '',
+                'per_page' => static::PER_PAGE,
+                'ids' => '',
+                'orderby' => '',
+                'order' => 'DESC',
+                'meta_key' => '',
             ],
             $attributes,
             static::tag()

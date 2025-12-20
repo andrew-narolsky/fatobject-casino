@@ -14,6 +14,7 @@ use FOC\Classes\Posts\FocSlotPost;
 use FOC\Classes\Settings\FocSettings;
 use FOC\Classes\Shortcodes\FocBrandBonusesShortcode;
 use FOC\Classes\Shortcodes\FocBrandGamesShortcode;
+use FOC\Classes\Shortcodes\FocBrandListShortcode;
 use FOC\Classes\Shortcodes\FocBrandPaymentSystemsShortcode;
 use FOC\Classes\Shortcodes\FocBrandSoftwareProvidersShortcode;
 use FOC\Classes\Shortcodes\FocSlotListShortcode;
@@ -75,6 +76,7 @@ class FocPlugin
         FocBrandSoftwareProvidersShortcode::class,
         FocBrandGamesShortcode::class,
         FocSlotListShortcode::class,
+        FocBrandListShortcode::class,
     ];
 
     /**

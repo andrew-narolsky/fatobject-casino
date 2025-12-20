@@ -622,7 +622,7 @@ button {
     }
 }
 
-.foc-casino__best-brands {
+.foc-casino__best-brands .best-brands-wrapper {
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -630,7 +630,7 @@ button {
 }
 
 @media (max-width: 1199px) {
-    .foc-casino__best-brands {
+    .foc-casino__best-brands .best-brands-wrapper {
         flex-direction: row;
         flex-wrap: wrap;
         gap: 20px;
@@ -703,6 +703,7 @@ button {
 
 .foc-casino__best-brands .item .img-block img {
     max-width: 50%;
+    max-height: 90%;
     object-fit: contain
 }
 
@@ -793,7 +794,8 @@ button {
     flex-wrap: wrap
 }
 
-.foc-casino__best-slots .show-more-block {
+.foc-casino__best-slots .show-more-block,
+.foc-casino__best-brands .show-more-block {
     margin-top: 20px;
     border: none
 }

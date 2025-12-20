@@ -24,7 +24,7 @@ $query = new WP_Query($args);
 
 <div class="foc-casino">
     <div class="container">
-        <div class="foc-casino__best-slots"
+        <div class="foc-casino__best-brands"
              data-per-page="<?php echo esc_attr($per_page); ?>"
              data-post-type="<?php echo esc_attr($post_type); ?>"
              data-page="<?php echo esc_attr($page); ?>"
@@ -33,7 +33,7 @@ $query = new WP_Query($args);
              data-order="<?php echo esc_attr($order ?: ''); ?>"
              data-meta-key="<?php echo esc_attr($meta_key ?: ''); ?>">
 
-            <div class="best-slots-wrapper">
+            <div class="best-brands-wrapper">
                 <?php
                 foreach ($query->posts as $index => $post) {
                     $query->the_post();

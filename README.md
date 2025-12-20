@@ -192,7 +192,7 @@ The shortcode supports the following parameters:
 ```
 | Parameter  | Type   | Description                                                            |
 | ---------- | ------ | ---------------------------------------------------------------------- |
-| `pages`    | int    | Number of items displayed per page                                     |
+| `per_page` | int    | Number of items displayed per page                                     |
 | `ids`      | string | Comma-separated list of post IDs to display                            |
 | `orderby`  | string | Sorting method (`date`, `title`, `meta_value`, `meta_value_num`, etc.) |
 | `order`    | string | Sort direction (`ASC` or `DESC`)                                       |
@@ -200,9 +200,9 @@ The shortcode supports the following parameters:
 ```
 **Examples**
 
-Limit number of items per page
+Limit the number of items per page
 ```
-[foc_slot_list pages="6"]
+[foc_slot_list per_page="6"]
 ```
 **Display specific slots by ID**
 ```
@@ -223,10 +223,15 @@ Limit number of items per page
 * When using orderby="meta_value" or orderby="meta_value_num", the meta_key parameter is required.
 * The shortcode is designed to be reusable and extendable for future filtering and sorting features.
 
-[//]: # (6. Brand list.)
+6. Brand list.
 
-[//]: # (```)
+**Basic usage (more see Slot list shortcode)**
 
-[//]: # ([foc_brand_list])
-
-[//]: # (```)
+Display a list of brands with default settings:
+```
+[foc_brand_list]
+```
+By default, the shortcode:
+* Shows 10 items per page
+* Uses standard WordPress ordering
+* Supports Load More via AJAX

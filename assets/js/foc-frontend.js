@@ -80,18 +80,26 @@ document.addEventListener('click', function (e) {
     const btn = e.target.closest('.show-more');
     if (!btn) return;
 
-    const wrapper = btn.closest('.foc-casino__best-slots');
+    // підтримка різних контейнерів
+    const wrapper = btn.closest(
+        '.foc-casino__best-slots, .foc-casino__best-brands'
+    );
     if (!wrapper) return;
 
-    const list = wrapper.querySelector('.best-slots-wrapper');
+    // визначаємо список усередині wrapper
+    const list = wrapper.querySelector(
+        '.best-slots-wrapper, .best-brands-wrapper'
+    );
+    if (!list) return;
 
-    let page = parseInt(wrapper.dataset.page, 10) + 1;
-    let perPage = parseInt(wrapper.dataset.perPage, 10);
-    let postType = wrapper.dataset.postType;
-    let ids = wrapper.dataset.ids;
-    let orderby = wrapper.dataset.orderby;
-    let order = wrapper.dataset.order;
-    let metaKey = wrapper.dataset.metaKey;
+    const page     = parseInt(wrapper.dataset.page, 10) + 1;
+    const perPage  = parseInt(wrapper.dataset.perPage, 10);
+    const postType = wrapper.dataset.postType;
+
+    const ids      = wrapper.dataset.ids || '';
+    const orderby  = wrapper.dataset.orderby || '';
+    const order    = wrapper.dataset.order || '';
+    const metaKey  = wrapper.dataset.metaKey || '';
 
     btn.disabled = true;
 
@@ -112,7 +120,7 @@ document.addEventListener('click', function (e) {
             meta_key: metaKey
         })
     })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(response => {
             if (!response.success) {
                 btn.disabled = false;

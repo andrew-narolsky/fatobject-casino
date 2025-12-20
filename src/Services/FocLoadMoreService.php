@@ -40,52 +40,41 @@ class FocLoadMoreService
     {
         check_ajax_referer('foc_frontend', 'nonce');
 
-        $page     = max(1, (int) ($_POST['page'] ?? 1));
-        $perPage = max(1, (int) ($_POST['per_page'] ?? self::PER_PAGE));
-        $postType = sanitize_key($_POST['post_type'] ?? '');
-
-        $args = [
-            'post_type'      => $postType,
-            'posts_per_page' => $perPage,
-            'paged'          => $page,
+        $config = [
+            'post_type' => sanitize_key($_POST['post_type'] ?? ''),
+            'page'      => max(1, (int) ($_POST['page'] ?? self::PAGE)),
+            'per_page'  => max(1, (int) ($_POST['per_page'] ?? self::PER_PAGE)),
+            'orderby'   => sanitize_text_field($_POST['orderby'] ?? ''),
+            'order'     => sanitize_text_field($_POST['order'] ?? 'DESC'),
+            'meta_key'  => sanitize_text_field($_POST['meta_key'] ?? ''),
+            'ids'       => [],
         ];
 
-        // ids
         if (!empty($_POST['ids'])) {
-            $ids = array_values(
+            $config['ids'] = array_values(
                 array_filter(
                     array_map('intval', explode(',', $_POST['ids']))
                 )
             );
-
-            if ($ids) {
-                $args['post__in'] = $ids;
-                $args['orderby'] = 'post__in';
-            }
         }
 
-        // sorting
-        if (!empty($_POST['orderby'])) {
-            $args['orderby'] = sanitize_text_field($_POST['orderby']);
-            $args['order']   = sanitize_text_field($_POST['order'] ?? 'DESC');
-
-            if (in_array($args['orderby'], ['meta_value', 'meta_value_num'], true)) {
-                $args['meta_key'] = sanitize_text_field($_POST['meta_key'] ?? '');
-            }
-        }
-
-        $query = new WP_Query($args);
+        $query = new WP_Query(foc_build_query_args($config));
 
         ob_start();
-        while ($query->have_posts()) {
+
+        foreach ($query->posts as $index => $post) {
             $query->the_post();
-            foc_render('parts/slot-card.php');
+            foc_render('parts/' . $config['post_type'] . '-card.php', [
+                'page'     => $config['page'],
+                'per_page' => $config['per_page'],
+                'index'    => $index,
+            ]);
         }
         wp_reset_postdata();
 
         wp_send_json_success([
             'html'     => ob_get_clean(),
-            'has_more' => $page < $query->max_num_pages,
+            'has_more' => $config['page'] < $query->max_num_pages,
         ]);
     }
 }

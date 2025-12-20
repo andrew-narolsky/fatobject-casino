@@ -144,3 +144,48 @@ if (!function_exists('foc_render')) {
         FocTemplateLoader::render($template, $context);
     }
 }
+
+if (!function_exists('foc_build_query_args')) {
+    /**
+     * Build WP_Query arguments for post-list shortcodes and Load More requests.
+     *
+     * This helper normalizes and prepares query arguments based on a unified
+     * configuration array. It supports:
+     * - pagination
+     * - filtering by specific post-IDs (with preserved order)
+     * - standard ordering
+     * - meta field–based ordering
+     *
+     * Priority rules:
+     * - If `ids` are provided, ordering is forced to `post__in`
+     * - Otherwise, `orderby` / `order` are applied if present
+     * - `meta_key` is applied only for meta-based sorting
+     */
+    function foc_build_query_args(array $config): array
+    {
+        $ids = is_array($config['ids'] ?? null) ? $config['ids'] : [];
+
+        $args = [
+            'post_type'      => $config['post_type'],
+            'posts_per_page' => (int) $config['per_page'],
+            'paged'          => (int) ($config['page'] ?? 1),
+        ];
+
+        if ($ids) {
+            $args['post__in'] = $ids;
+            $args['orderby'] = 'post__in';
+        } elseif (!empty($config['orderby'])) {
+            $args['orderby'] = $config['orderby'];
+            $args['order']   = $config['order'] ?? 'DESC';
+        }
+
+        if (
+            in_array($config['orderby'] ?? '', ['meta_value', 'meta_value_num'], true)
+            && !empty($config['meta_key'])
+        ) {
+            $args['meta_key'] = $config['meta_key'];
+        }
+
+        return $args;
+    }
+}

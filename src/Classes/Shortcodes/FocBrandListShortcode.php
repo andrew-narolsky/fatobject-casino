@@ -5,36 +5,36 @@ namespace FOC\Classes\Shortcodes;
 use FOC\Classes\Shortcodes\Abstracts\FocAbstractShortcode;
 
 /**
- * Slot list shortcode.
+ * Brand list shortcode.
  *
- * Renders a list of available slots.
+ * Renders a list of available brands.
  *
  * Shortcode usage:
- *   [foc_slot_list]
+ *   [foc_brand_list]
  *
  * The output is rendered via a template located at:
- *   /templates/shortcodes/slot-list.php
+ *   /templates/shortcodes/brand-list.php
  */
-class FocSlotListShortcode extends FocAbstractShortcode
+class FocBrandListShortcode extends FocAbstractShortcode
 {
     /**
      * Default number of items displayed per page.
      *
      * Used by shortcodes that support pagination or "load more" functionality.
      */
-    protected const int PER_PAGE = 9;
+    protected const int PER_PAGE = 10;
 
     /**
      * Post-type slug.
      */
-    protected const string POST_TYPE = 'slot';
+    protected const string POST_TYPE = 'brand';
 
     /**
      * Shortcode tag
      */
     protected static function tag(): string
     {
-        return 'foc_slot_list';
+        return 'foc_brand_list';
     }
 
     /**
@@ -42,7 +42,7 @@ class FocSlotListShortcode extends FocAbstractShortcode
      */
     protected static function template(): string
     {
-        return 'shortcodes/slot-list.php';
+        return 'shortcodes/brand-list.php';
     }
 
     /**
