@@ -16,7 +16,9 @@ use FOC\Classes\Shortcodes\FocBrandBonusesShortcode;
 use FOC\Classes\Shortcodes\FocBrandGamesShortcode;
 use FOC\Classes\Shortcodes\FocBrandPaymentSystemsShortcode;
 use FOC\Classes\Shortcodes\FocBrandSoftwareProvidersShortcode;
+use FOC\Classes\Shortcodes\FocSlotListShortcode;
 use FOC\Classes\Template\FocTemplateLoader;
+use FOC\Services\FocLoadMoreService;
 
 /**
  * Main plugin controller class.
@@ -72,6 +74,7 @@ class FocPlugin
         FocBrandPaymentSystemsShortcode::class,
         FocBrandSoftwareProvidersShortcode::class,
         FocBrandGamesShortcode::class,
+        FocSlotListShortcode::class,
     ];
 
     /**
@@ -81,6 +84,7 @@ class FocPlugin
         FocSettings::class,
         FocImport::class,
         FocFrontendHooks::class,
+        FocLoadMoreService::class,
     ];
 
     /**
@@ -231,9 +235,17 @@ class FocPlugin
      */
     public static function enqueueAssets(): void
     {
+        /**
+         * Uncomment the condition below if you want to load frontend assets
+         * ONLY on single Brand and Slot pages.
+         *
+         * By default, assets will be enqueued globally across the entire site.
+         */
+        /*
         if (!is_singular(['brand', 'slot'])) {
             return;
         }
+        */
 
         $version = defined('FOC_PLUGIN_VERSION')
             ? FOC_PLUGIN_VERSION

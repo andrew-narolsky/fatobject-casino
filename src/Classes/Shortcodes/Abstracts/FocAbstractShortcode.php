@@ -28,6 +28,14 @@ use FOC\Classes\Template\FocTemplateLoader;
 abstract class FocAbstractShortcode
 {
     /**
+     * Default number of items displayed per page.
+     *
+     * Used by shortcodes that support pagination or "load more" functionality.
+     * Can be overridden or ignored by child shortcodes if needed.
+     */
+    protected const int PER_PAGE = 10;
+
+    /**
      * Shortcode tag
      */
     abstract protected static function tag(): string;
@@ -58,7 +66,27 @@ abstract class FocAbstractShortcode
      */
     final public static function render(array $attributes = []): string
     {
-        $attributes = shortcode_atts($attributes, [static::tag()]);
+        $attributes = shortcode_atts(
+            [
+                'pages' => static::PER_PAGE,
+                'ids'       => '',
+                'orderby'   => '',
+                'order'     => 'DESC',
+                'meta_key'  => '',
+            ],
+            $attributes,
+            static::tag()
+        );
+
+        if (!empty($attributes['ids'])) {
+            $attributes['ids'] = array_values(
+                array_filter(
+                    array_map('intval', explode(',', $attributes['ids']))
+                )
+            );
+        } else {
+            $attributes['ids'] = [];
+        }
 
         ob_start();
 

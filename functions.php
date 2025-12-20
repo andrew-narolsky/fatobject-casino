@@ -1,5 +1,7 @@
 <?php
 
+use FOC\Classes\Template\FocTemplateLoader;
+
 if (!function_exists('foc_normalize_url')) {
     /**
      * Normalize a URL for safe output:
@@ -117,12 +119,28 @@ if (!function_exists('foc_get_bonus_type_class')) {
 
 if (!function_exists('foc_dump')) {
     /**
-     * Dump an array in a readable format.
+     * Dump an mixed in a readable format.
      */
-    function foc_dump(array $value): void
+    function foc_dump(mixed $value): void
     {
         echo '<pre>';
         print_r($value);
         echo '</pre>';
+    }
+}
+
+if (!function_exists('foc_render')) {
+    /**
+     * Render a plugin template using FocTemplateLoader.
+     *
+     * This helper provides a simple, procedural wrapper around
+     * FocTemplateLoader::render() to avoid repetitive static calls
+     * in templates and improve readability.
+     *
+     * Templates can be overridden by the active theme.
+     */
+    function foc_render(string $template, array $context = []): void
+    {
+        FocTemplateLoader::render($template, $context);
     }
 }

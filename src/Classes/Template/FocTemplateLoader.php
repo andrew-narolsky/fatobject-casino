@@ -16,7 +16,7 @@ namespace FOC\Classes\Template;
  *
  * Usage:
  *   - FocTemplateLoader::locate('single-brand.php') → returns a path to template
- *   - FocTemplateLoader::render('parts/sidebar-brand-card.php', ['var' => $value])
+ *   - FocTemplateLoader::render('parts/sidebar-slot-card.php', ['var' => $value])
  *     → loads the template and makes $var available inside it
  *
  * This approach separates template markup from plugin logic

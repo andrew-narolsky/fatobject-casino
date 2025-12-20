@@ -171,3 +171,62 @@ The plugin provides several shortcodes for displaying casino-related content. Al
 ```
 [foc_brand_games]
 ```
+
+5. Slot list.
+
+**Basic usage** 
+
+Display a list of slots with default settings:
+
+```
+[foc_slot_list]
+```
+By default, the shortcode:
+* Shows 9 items per page
+* Uses standard WordPress ordering
+* Supports Load More via AJAX
+
+**Parameters**
+
+The shortcode supports the following parameters:
+```
+| Parameter  | Type   | Description                                                            |
+| ---------- | ------ | ---------------------------------------------------------------------- |
+| `pages`    | int    | Number of items displayed per page                                     |
+| `ids`      | string | Comma-separated list of post IDs to display                            |
+| `orderby`  | string | Sorting method (`date`, `title`, `meta_value`, `meta_value_num`, etc.) |
+| `order`    | string | Sort direction (`ASC` or `DESC`)                                       |
+| `meta_key` | string | Meta field key used for meta-based sorting                             |
+```
+**Examples**
+
+Limit number of items per page
+```
+[foc_slot_list pages="6"]
+```
+**Display specific slots by ID**
+```
+[foc_slot_list ids="12,45,78,103"]
+```
+**Sort by post-title**
+```
+[foc_slot_list orderby="title" order="ASC"]
+```
+**Sort by a numeric meta-field (e.g., rating)**
+```
+[foc_slot_list orderby="meta_value_num" meta_key="rating" order="DESC"]
+```
+**Notes**
+
+* All parameters are optional.
+* Parameters are automatically passed to the Load More functionality, so pagination remains consistent.
+* When using orderby="meta_value" or orderby="meta_value_num", the meta_key parameter is required.
+* The shortcode is designed to be reusable and extendable for future filtering and sorting features.
+
+[//]: # (6. Brand list.)
+
+[//]: # (```)
+
+[//]: # ([foc_brand_list])
+
+[//]: # (```)

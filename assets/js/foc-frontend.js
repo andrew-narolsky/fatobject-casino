@@ -75,3 +75,60 @@ document.addEventListener('click', function (e) {
 
     toggleExpandable(btn);
 });
+
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.show-more');
+    if (!btn) return;
+
+    const wrapper = btn.closest('.foc-casino__best-slots');
+    if (!wrapper) return;
+
+    const list = wrapper.querySelector('.best-slots-wrapper');
+
+    let page = parseInt(wrapper.dataset.page, 10) + 1;
+    let perPage = parseInt(wrapper.dataset.perPage, 10);
+    let postType = wrapper.dataset.postType;
+    let ids = wrapper.dataset.ids;
+    let orderby = wrapper.dataset.orderby;
+    let order = wrapper.dataset.order;
+    let metaKey = wrapper.dataset.metaKey;
+
+    btn.disabled = true;
+
+    fetch(FOC_FRONTEND.ajax_url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+            action: 'foc_load_more',
+            nonce: FOC_FRONTEND.nonce,
+            page,
+            per_page: perPage,
+            post_type: postType,
+            ids,
+            orderby,
+            order,
+            meta_key: metaKey
+        })
+    })
+        .then(response => response.json())
+        .then(response => {
+            if (!response.success) {
+                btn.disabled = false;
+                return;
+            }
+
+            list.insertAdjacentHTML('beforeend', response.data.html);
+            wrapper.dataset.page = page;
+
+            if (!response.data.has_more) {
+                btn.closest('.show-more-block')?.remove();
+            } else {
+                btn.disabled = false;
+            }
+        })
+        .catch(() => {
+            btn.disabled = false;
+        });
+});

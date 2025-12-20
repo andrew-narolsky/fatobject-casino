@@ -13,10 +13,7 @@ if ($payout_percentage !== '—') {
     $payout_percentage .= '%';
 }
 
-$rows = foc_get_meta_value($meta, 'rows');
-$min_bet = foc_get_meta_value($meta, 'min_bet');
-$paylines = foc_get_meta_value($meta, 'paylines');
-$reels = foc_get_meta_value($meta, 'reels');
+$permalink = get_the_permalink();
 
 $software_provider = foc_get_meta_value($meta, 'software_provider', []);
 if (is_string($software_provider)) {
@@ -24,22 +21,20 @@ if (is_string($software_provider)) {
 }
 ?>
 
-<div class="slot-card">
-    <?php if ($rating): ?>
-        <div class="rate-block rate-<?php echo floor((float)$rating); ?>">
-            <span class="rate"><?php echo $rating; ?>/<?php echo $maxRating; ?></span>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($software_provider): ?>
-        <div class="game-provider"><?php echo __('Game provider: ', 'foc-casino'); ?><b><?php echo $software_provider['name']; ?></b></div>
-    <?php endif; ?>
-
-    <div class="img-block">
+<div class="item">
+    <a href="<?php echo $permalink; ?>" class="img-block">
         <img src="<?php echo $image; ?>" alt="<?php the_title_attribute(); ?>" loading="lazy">
-    </div>
+    </a>
 
     <div class="info-block">
+        <a href="<?php echo $permalink; ?>" class="item-title"><?php echo get_the_title(); ?></a>
+
+        <?php if ($rating): ?>
+            <div class="rate-block rate-<?php echo floor((float)$rating); ?>">
+                <span class="rate"><?php echo $rating; ?>/<?php echo $maxRating; ?></span>
+            </div>
+        <?php endif; ?>
+
         <div class="bonus-wrapper">
             <div class="bw-item">
                 <span class="item-title"><?php echo __('Volatility', 'foc-casino'); ?></span>
@@ -54,28 +49,15 @@ if (is_string($software_provider)) {
                 <span class="item-value"><?php echo $payout_percentage; ?></span>
             </div>
         </div>
-    </div>
+        <div class="button-wrapper">
+            <?php if ($url): ?>
+                <a href="<?php echo $url; ?>" class="cas-button"><?php echo __('Play', 'foc-casino'); ?></a>
+            <?php endif; ?>
+            <a href="<?php echo $permalink; ?>" class="cas-button white"><?php echo __('Review', 'foc-casino'); ?></a>
+        </div>
 
-    <div class="details-block">
-        <div class="dt-item">
-            <i><?php echo __('Rows', 'foc-casino'); ?></i>
-            <b><?php echo $rows; ?></b>
-        </div>
-        <div class="dt-item">
-            <i><?php echo __('Min stake', 'foc-casino'); ?></i>
-            <b><?php echo $min_bet; ?></b>
-        </div>
-        <div class="dt-item">
-            <i><?php echo __('Paylines', 'foc-casino'); ?></i>
-            <b><?php echo $paylines; ?></b>
-        </div>
-        <div class="dt-item">
-            <i><?php echo __('Wheels', 'foc-casino'); ?></i>
-            <b><?php echo $reels; ?></b>
-        </div>
+        <?php if ($software_provider): ?>
+            <div class="game-provider"><?php echo __('Game provider: ', 'foc-casino'); ?><b><?php echo $software_provider['name']; ?></b></div>
+        <?php endif; ?>
     </div>
-
-    <?php if ($url): ?>
-        <a href="<?php echo $url; ?>" class="cas-button"><?php echo __('Play', 'foc-casino'); ?></a>
-    <?php endif; ?>
 </div>

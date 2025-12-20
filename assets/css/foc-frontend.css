@@ -786,12 +786,16 @@ button {
     }
 }
 
-.foc-casino__best-slots {
+.foc-casino__best-slots .best-slots-wrapper {
     display: flex;
     gap: 20px;
     width: 100%;
-    flex-wrap: wrap;
-    justify-content: center
+    flex-wrap: wrap
+}
+
+.foc-casino__best-slots .show-more-block {
+    margin-top: 20px;
+    border: none
 }
 
 .foc-casino__best-slots .item {

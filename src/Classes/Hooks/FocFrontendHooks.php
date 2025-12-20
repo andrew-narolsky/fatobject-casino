@@ -39,7 +39,7 @@ class FocFrontendHooks
      */
     public function renderSidebarBrandCard(): void
     {
-        FocTemplateLoader::render('parts/sidebar-brand-card.php');
+        FocTemplateLoader::render('parts/sidebar-slot-card.php');
     }
 
     /**
