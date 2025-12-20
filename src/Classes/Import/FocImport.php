@@ -178,6 +178,8 @@ class FocImport
      */
     public function renderPage(): void
     {
+        $this->maybeCleanupCompletedStatuses();
+
         $tasks = $this->getTasks();
 
         $statuses = [];
@@ -306,5 +308,49 @@ class FocImport
         }
 
         FocBrandSyncJob::handle();
+    }
+
+    /**
+     * Checks if all import/sync tasks have completed.
+     *
+     * If every task has a status of 'completed', this indicates that
+     * the previous import session has finished and any leftover
+     * status options can be safely cleared from the database.
+     *
+     * This prevents old "100% completed" progress bars from appearing
+     * when visiting the import page after a completed import or a CRON run.
+     */
+    private function maybeCleanupCompletedStatuses(): void
+    {
+        $tasks = $this->getTasks();
+
+        $hasAnyStatus = false;
+        $allCompleted = true;
+
+        foreach ($tasks as $task) {
+            $status = get_option($task['job']::STATUS_OPTION);
+
+            if (!$status) {
+                $allCompleted = false;
+                continue;
+            }
+
+            $hasAnyStatus = true;
+
+            if (($status['status'] ?? null) !== 'completed') {
+                $allCompleted = false;
+                break;
+            }
+        }
+
+        if (!$hasAnyStatus) {
+            return;
+        }
+
+        if ($allCompleted) {
+            foreach ($tasks as $task) {
+                delete_option($task['job']::STATUS_OPTION);
+            }
+        }
     }
 }
