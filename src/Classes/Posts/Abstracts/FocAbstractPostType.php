@@ -93,6 +93,9 @@ abstract class FocAbstractPostType
                     [static::class, 'renderMetaBox'],
                     static::slug()
             );
+
+            // Call optional additional meta-boxes
+            static::registerAdditionalMetaBoxes();
         });
 
         add_action(
@@ -226,5 +229,18 @@ abstract class FocAbstractPostType
 
             update_post_meta($postId, $metaKey, $sanitizedRows);
         }
+    }
+
+    /**
+     * Optional hook for child classes to register additional meta-boxes.
+     *
+     * Child classes can override this method to add custom meta-boxes,
+     * like instructions, shortcodes, or info blocks.
+     *
+     * The default implementation does nothing.
+     */
+    protected static function registerAdditionalMetaBoxes(): void
+    {
+        // Do nothing by default
     }
 }

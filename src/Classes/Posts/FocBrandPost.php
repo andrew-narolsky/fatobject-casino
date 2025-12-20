@@ -58,4 +58,32 @@ class FocBrandPost extends FocAbstractPostType
     {
         return FocBrandModel::class;
     }
+
+    /**
+     * Register additional meta-boxes for brand post-type
+     */
+    protected static function registerAdditionalMetaBoxes(): void
+    {
+        add_meta_box(
+            static::slug() . '_shortcodes',
+            'Shortcodes',
+            function() {
+                ?>
+                <div>
+                    <p><strong>Brand bonuses:</strong></p>
+                    <code>[foc_brand_bonuses]</code>
+                    <p><strong>Brand payment systems:</strong></p>
+                    <code>[foc_brand_payment_systems]</code>
+                    <p><strong>Brand software providers:</strong></p>
+                    <code>[foc_brand_software_providers]</code>
+                    <p><strong>Brand games:</strong></p>
+                    <code>[foc_brand_games]</code>
+                </div>
+                <?php
+            },
+            static::slug(),
+            'side',
+            'low'
+        );
+    }
 }
