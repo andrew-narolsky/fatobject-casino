@@ -88,29 +88,29 @@ if (!function_exists('foc_get_bonus_type_class')) {
 
         $map = [
             // Deposit bonuses
-            'no_deposit'       => 'purple',
-            'first_deposit'    => 'purple',
-            'second_deposit'   => 'purple',
-            'third_deposit'    => 'purple',
-            'fourth_deposit'   => 'purple',
-            'fifth_deposit'    => 'purple',
-            'sixth_deposit'    => 'purple',
-            'seventh_deposit'  => 'purple',
-            'eighth_deposit'   => 'purple',
-            'ninth_deposit'    => 'purple',
+            'no_deposit' => 'purple',
+            'first_deposit' => 'purple',
+            'second_deposit' => 'purple',
+            'third_deposit' => 'purple',
+            'fourth_deposit' => 'purple',
+            'fifth_deposit' => 'purple',
+            'sixth_deposit' => 'purple',
+            'seventh_deposit' => 'purple',
+            'eighth_deposit' => 'purple',
+            'ninth_deposit' => 'purple',
 
             // Reload / recurring
-            'reload'           => 'blue',
-            'cashback'         => 'blue',
-            'daily'            => 'blue',
-            'referral'         => 'blue',
+            'reload' => 'blue',
+            'cashback' => 'blue',
+            'daily' => 'blue',
+            'referral' => 'blue',
 
             // Special bonuses
-            'high_roller'      => 'red',
-            'sticky_bonus'     => 'red',
-            'none_sticky'      => 'red',
-            'exclusive'        => 'red',
-            'crypto'           => 'red',
+            'high_roller' => 'red',
+            'sticky_bonus' => 'red',
+            'none_sticky' => 'red',
+            'exclusive' => 'red',
+            'crypto' => 'red',
         ];
 
         return $map[$type] ?? '';
@@ -166,9 +166,9 @@ if (!function_exists('foc_build_query_args')) {
         $ids = is_array($config['ids'] ?? null) ? $config['ids'] : [];
 
         $args = [
-            'post_type'      => $config['post_type'],
-            'posts_per_page' => (int) $config['per_page'],
-            'paged'          => (int) ($config['page'] ?? 1),
+            'post_type' => $config['post_type'],
+            'posts_per_page' => (int)$config['per_page'],
+            'paged' => (int)($config['page'] ?? 1),
         ];
 
         if ($ids) {
@@ -176,7 +176,7 @@ if (!function_exists('foc_build_query_args')) {
             $args['orderby'] = 'post__in';
         } elseif (!empty($config['orderby'])) {
             $args['orderby'] = $config['orderby'];
-            $args['order']   = $config['order'] ?? 'DESC';
+            $args['order'] = $config['order'] ?? 'DESC';
         }
 
         if (
@@ -187,5 +187,71 @@ if (!function_exists('foc_build_query_args')) {
         }
 
         return $args;
+    }
+}
+
+if (!function_exists('foc_get_brand_card_data')) {
+    /**
+     * Prepare normalized data for rendering brand cards.
+     *
+     * Collects and normalizes brand-related meta-fields (image, URL, background,
+     * rating) and extracts the first deposit bonus data into a unified structure
+     * that can be reused across different templates (main card, sidebar card, etc.).
+     *
+     * This helper contains all business logic related to brand cards and should be
+     * the single source of truth for brand card data preparation.
+     */
+    function foc_get_brand_card_data(int $postId): array
+    {
+        $meta = get_post_meta($postId);
+
+        $image = foc_get_meta_value($meta, 'image', esc_url(FOC_PLUGIN_URL . 'assets/img/brand-logo.svg'));
+        $url = foc_normalize_url(foc_get_meta_value($meta, 'url', null));
+        $background = foc_get_meta_value($meta, 'background', '#eee');
+        $rating = foc_get_meta_value($meta, 'rating', null);
+
+        $bonuses = foc_get_meta_value($meta, 'bonuses', []);
+        if (is_string($bonuses)) {
+            $bonuses = maybe_unserialize($bonuses);
+        }
+
+        $firstDepositBonus = null;
+        foreach ($bonuses as $bonus) {
+            if (($bonus['type'] ?? '') === 'first_deposit') {
+                $firstDepositBonus = $bonus;
+                break;
+            }
+        }
+
+        $currency = '€';
+        $moneyAmount = '—';
+        $freeSpins = '—';
+        $wagerRequirements = '—';
+        $bonusCode = null;
+
+        if ($firstDepositBonus) {
+            $currency = $firstDepositBonus['currency']['symbol'] ?? '€';
+            $moneyAmount = foc_get_bonus_value($firstDepositBonus, 'moneyAmount', null);
+            $freeSpins = foc_get_bonus_value($firstDepositBonus, 'freeSpins');
+            $wagerRequirements = foc_get_bonus_value($firstDepositBonus, 'wagerRequirements', '—', '', 'x');
+            $bonusCode = foc_get_bonus_value($firstDepositBonus, 'bonusCode', null);
+        }
+
+        return [
+            'image' => $image,
+            'url' => $url,
+            'background' => $background,
+            'rating' => $rating,
+            'max_rating' => 5,
+
+            'bonus' => [
+                'exists' => (bool)$firstDepositBonus,
+                'currency' => $currency,
+                'money_amount' => $moneyAmount,
+                'free_spins' => $freeSpins,
+                'wager_requirements' => $wagerRequirements,
+                'bonus_code' => $bonusCode,
+            ],
+        ];
     }
 }
