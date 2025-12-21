@@ -42,6 +42,7 @@ class FocLoadMoreService
 
         $config = [
             'post_type' => sanitize_key($_POST['post_type'] ?? ''),
+            'post_status' => 'publish',
             'page'      => max(1, (int) ($_POST['page'] ?? self::PAGE)),
             'per_page'  => max(1, (int) ($_POST['per_page'] ?? self::PER_PAGE)),
             'orderby'   => sanitize_text_field($_POST['orderby'] ?? ''),

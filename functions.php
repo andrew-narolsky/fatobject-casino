@@ -167,6 +167,7 @@ if (!function_exists('foc_build_query_args')) {
 
         $args = [
             'post_type' => $config['post_type'],
+            'post_status' => $config['post_status'] ?? 'publish',
             'posts_per_page' => (int)$config['per_page'],
             'paged' => (int)($config['page'] ?? 1),
         ];
@@ -260,47 +261,30 @@ if (!function_exists('foc_get_slot_card_data')) {
     /**
      * Prepare normalized data for rendering slot cards.
      *
-     * Collects slot-related meta fields (image, URL, rating, volatility,
+     * Collects slot-related meta-fields (image, URL, rating, volatility,
      * payout percentage, betting limits, paylines, reels, and software provider)
      * into a reusable, template-friendly data structure.
-     *
-     * @param int $postId Slot post ID.
-     *
-     * @return array{
-     *     image: string,
-     *     url: string|null,
-     *     rating: string|int|float|null,
-     *     max_rating: int,
-     *     volatility: string|null,
-     *     max_profit: string|null,
-     *     payout_percentage: string,
-     *     rows: string|int|null,
-     *     min_bet: string|int|null,
-     *     paylines: string|int|null,
-     *     reels: string|int|null,
-     *     software_provider: array
-     * }
      */
     function foc_get_slot_card_data(int $postId): array
     {
         $meta = get_post_meta($postId);
 
-        $image   = foc_get_meta_value($meta, 'image', esc_url(FOC_PLUGIN_URL . 'assets/img/slot-logo.svg'));
-        $url     = foc_normalize_url(foc_get_meta_value($meta, 'url', null));
-        $rating  = foc_get_meta_value($meta, 'rating', null);
+        $image = foc_get_meta_value($meta, 'image', esc_url(FOC_PLUGIN_URL . 'assets/img/slot-logo.svg'));
+        $url = foc_normalize_url(foc_get_meta_value($meta, 'url', null));
+        $rating = foc_get_meta_value($meta, 'rating', null);
 
         $volatility = foc_get_meta_value($meta, 'volatility');
-        $maxProfit  = foc_get_meta_value($meta, 'max_profit');
+        $maxProfit = foc_get_meta_value($meta, 'max_profit');
 
         $payout = foc_get_meta_value($meta, 'payout_percentage', '—');
         if ($payout !== '—') {
             $payout .= '%';
         }
 
-        $rows     = foc_get_meta_value($meta, 'rows');
-        $minBet   = foc_get_meta_value($meta, 'min_bet');
+        $rows = foc_get_meta_value($meta, 'rows');
+        $minBet = foc_get_meta_value($meta, 'min_bet');
         $paylines = foc_get_meta_value($meta, 'paylines');
-        $reels    = foc_get_meta_value($meta, 'reels');
+        $reels = foc_get_meta_value($meta, 'reels');
 
         $softwareProvider = foc_get_meta_value($meta, 'software_provider', []);
         if (is_string($softwareProvider)) {
@@ -308,21 +292,21 @@ if (!function_exists('foc_get_slot_card_data')) {
         }
 
         return [
-            'image'              => $image,
-            'url'                => $url,
-            'rating'             => $rating,
-            'max_rating'         => 5,
+            'image' => $image,
+            'url' => $url,
+            'rating' => $rating,
+            'max_rating' => 5,
 
-            'volatility'         => $volatility,
-            'max_profit'         => $maxProfit,
-            'payout_percentage'  => $payout,
+            'volatility' => $volatility,
+            'max_profit' => $maxProfit,
+            'payout_percentage' => $payout,
 
-            'rows'               => $rows,
-            'min_bet'            => $minBet,
-            'paylines'           => $paylines,
-            'reels'              => $reels,
+            'rows' => $rows,
+            'min_bet' => $minBet,
+            'paylines' => $paylines,
+            'reels' => $reels,
 
-            'software_provider'  => $softwareProvider[0]['name'],
+            'software_provider' => $softwareProvider[0]['name'],
         ];
     }
 }

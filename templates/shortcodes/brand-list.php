@@ -11,6 +11,7 @@
 
 $args  = foc_build_query_args([
         'post_type' => $post_type,
+        'post_status' => 'publish',
         'per_page'  => $per_page,
         'page'      => $page,
         'ids'       => $ids,
