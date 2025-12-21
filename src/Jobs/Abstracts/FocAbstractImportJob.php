@@ -43,7 +43,13 @@ abstract class FocAbstractImportJob extends FocAbstractJob
         $perPage = 10;
         $postType = static::postType();
 
-        $count = (int)(wp_count_posts($postType)->publish ?? 0);
+        $counts = wp_count_posts($postType);
+
+        $count = (int) (
+            ($counts->publish ?? 0) +
+            ($counts->draft ?? 0) +
+            ($counts->trash ?? 0)
+        );
 
         if ($count === 0) {
             error_log(sprintf(

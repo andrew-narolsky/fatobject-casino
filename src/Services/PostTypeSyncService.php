@@ -52,7 +52,7 @@ class PostTypeSyncService
             );
         }
 
-        $this->draftMissingPosts($existingMap, $apiIds);
+        $this->trashMissingPosts($existingMap, $apiIds);
     }
 
     /**
@@ -82,6 +82,7 @@ class PostTypeSyncService
 
             $posts = get_posts([
                 'post_type' => $postType,
+                'post_status' => ['publish', 'draft', 'trash'],
                 'meta_key' => $metaKey,
                 'meta_value' => $externalId,
                 'posts_per_page' => 1,
@@ -97,7 +98,6 @@ class PostTypeSyncService
             wp_update_post([
                 'ID' => $postId,
                 'post_title' => $title,
-                'post_status' => 'publish',
             ]);
 
             foreach ($fillable as $field) {
@@ -172,7 +172,7 @@ class PostTypeSyncService
         $existingPosts = get_posts([
             'post_type' => $postType,
             'numberposts' => -1,
-            'post_status' => ['publish', 'draft'],
+            'post_status' => ['publish', 'draft', 'trash'],
             'meta_key' => $metaKey,
         ]);
 
@@ -200,16 +200,16 @@ class PostTypeSyncService
     {
         if (isset($existingMap[$externalId])) {
             $postId = $existingMap[$externalId];
+
             wp_update_post([
                 'ID' => $postId,
                 'post_title' => $title,
-                'post_status' => 'publish',
             ]);
         } else {
             $postId = wp_insert_post([
                 'post_type' => $postType,
                 'post_title' => $title,
-                'post_status' => 'publish',
+                'post_status' => 'draft',
             ]);
 
             if (!is_wp_error($postId)) {
@@ -217,13 +217,12 @@ class PostTypeSyncService
                 $existingMap[$externalId] = $postId;
             }
         }
-
     }
 
     /**
      * Set posts to draft if they are missing from the API.
      */
-    private function draftMissingPosts(array $existingMap, array $apiIds): void
+    private function trashMissingPosts(array $existingMap, array $apiIds): void
     {
         foreach ($existingMap as $externalId => $postId) {
             if (!in_array($externalId, $apiIds, true)) {
