@@ -4,9 +4,10 @@
  * Plugin Name: FatObject Casino
  * Description: FatObject Casino Plugin
  * Text Domain: foc-casino
- * Version: 1.0
+ * Version: 1.0.0
  * Author: SiteForYou
- * License: GPL2
+ * License: GPL-2.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Requires PHP: 8.3
  */
 
